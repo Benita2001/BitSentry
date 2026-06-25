@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BitSentry Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#0a0a0f',
+          surface: '#13131a',
+          border: '#1e1e2e',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { background: #0a0a0f; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #13131a; }
+  ::-webkit-scrollbar-thumb { background: #1e1e2e; border-radius: 3px; }
+</style>
+</head>
+<body class="text-white min-h-screen">
+<div id="root"></div>
+
+<script type="text/babel">
+const API = 'http://127.0.0.1:8000';
+const REFRESH_INTERVAL = 10;
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function safetyColor(rating) {
+  if (rating === 'GREEN')  return { bg: 'bg-green-900',  text: 'text-green-400',  border: 'border-green-700' };
+  if (rating === 'RED')    return { bg: 'bg-red-900',    text: 'text-red-400',    border: 'border-red-700' };
+  return                          { bg: 'bg-yellow-900', text: 'text-yellow-400', border: 'border-yellow-700' };
+}
+
+function verdictColor(v) {
+  if (v === 'PERFORMING')       return 'text-green-400 bg-green-900 border-green-700';
+  if (v === 'DEAD')             return 'text-red-400 bg-red-900 border-red-700';
+  if (v === 'DEGRADING')        return 'text-yellow-400 bg-yellow-900 border-yellow-700';
+  return                               'text-slate-400 bg-slate-800 border-slate-600';
+}
+
+function Badge({ label, colors }) {
+  return (
+    <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold border ${colors}`}>
+      {label}
+    </span>
+  );
+}
+
+function StatCard({ label, value, sub }) {
+  return (
+    <div className="bg-[#13131a] border border-[#1e1e2e] rounded p-4 flex flex-col gap-1">
+      <div className="text-slate-400 text-xs uppercase tracking-wide">{label}</div>
+      <div className="text-2xl font-bold text-white">{value}</div>
+      {sub && <div className="text-slate-500 text-xs">{sub}</div>}
+    </div>
+  );
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+function Header({ connected, countdown }) {
+  return (
+    <header className="border-b border-[#1e1e2e] px-6 py-4 flex items-center justify-between bg-[#0a0a0f] sticky top-0 z-10">
+      <div className="flex items-center gap-3">
+        <div className="w-2 h-2 rounded-full bg-orange-500" />
+        <span className="font-bold text-lg tracking-tight">BitSentry</span>
+        <span className="text-slate-600 text-xs ml-2">v0.1.0</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="text-slate-500 text-xs">Refresh in {countdown}s</span>
+        <div className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded border ${
+          connected
+            ? 'text-green-400 bg-green-900/30 border-green-800'
+            : 'text-red-400 bg-red-900/30 border-red-800'
+        }`}>
+          <div className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-green-400' : 'bg-red-400'}`} />
+          {connected ? 'Connected' : 'Offline'}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+// ── Offline Banner ────────────────────────────────────────────────────────────
+
+function OfflineBanner() {
+  return (
+    <div className="mx-6 mt-6 p-4 bg-red-900/20 border border-red-800 rounded flex items-center gap-3">
+      <div className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
+      <div>
+        <div className="text-red-400 font-semibold text-sm">API Offline</div>
+        <div className="text-slate-400 text-xs mt-0.5">
+          Start server with: <code className="font-mono bg-[#1e1e2e] px-1.5 py-0.5 rounded text-orange-400">make run</code>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Account Safety ────────────────────────────────────────────────────────────
+
+function AccountSafety({ summary, positions }) {
+  const c = safetyColor(summary?.overall_safety || 'GREEN');
+  const pnl = summary?.total_unrealized_pnl ?? 0;
+  const pnlStr = pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`;
+  const pnlColor = pnl >= 0 ? 'text-green-400' : 'text-red-400';
+
+  return (
+    <section className="px-6 py-6 border-b border-[#1e1e2e]">
+      <h2 className="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-4">Account Safety</h2>
+
+      <div className="flex items-center gap-4 mb-6">
+        <div className={`px-5 py-2 rounded border text-2xl font-black tracking-wider ${c.bg} ${c.text} ${c.border}`}>
+          {summary?.overall_safety || '—'}
+        </div>
+        <div className="flex gap-3 text-xs">
+          <span className="text-green-400 font-semibold">{summary?.green_count ?? 0} GREEN</span>
+          <span className="text-yellow-400 font-semibold">{summary?.yellow_count ?? 0} YELLOW</span>
+          <span className="text-red-400 font-semibold">{summary?.red_count ?? 0} RED</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <StatCard label="Total Positions" value={summary?.total_positions ?? 0} />
+        <StatCard
+          label="Unrealized PnL"
+          value={<span className={pnlColor}>{pnlStr}</span>}
+        />
+        <StatCard
+          label="Open Positions"
+          value={positions?.length ?? 0}
+          sub="futures"
+        />
+      </div>
+
+      {positions && positions.length > 0 ? (
+        <div className="space-y-2">
+          {positions.map((p, i) => {
+            const pc = safetyColor(p.safety_rating);
+            const pnlPct = p.unrealized_pnl_pct ?? 0;
+            return (
+              <div key={i} className="bg-[#13131a] border border-[#1e1e2e] rounded px-4 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Badge label={p.safety_rating} colors={`${pc.text} ${pc.bg} ${pc.border}`} />
+                  <span className="font-mono font-semibold text-sm">{p.symbol}</span>
+                  <span className="text-slate-500 text-xs uppercase">{p.side}</span>
+                  <span className="text-slate-400 text-xs">{p.leverage}x</span>
+                </div>
+                <div className="flex items-center gap-4 text-xs">
+                  <span className="text-slate-400">Entry <span className="text-white font-mono">${p.entry_price?.toLocaleString()}</span></span>
+                  <span className={pnlPct >= 0 ? 'text-green-400 font-semibold' : 'text-red-400 font-semibold'}>
+                    {pnlPct >= 0 ? '+' : ''}{pnlPct.toFixed(2)}%
+                  </span>
+                  <span className="text-slate-500 text-xs max-w-xs truncate">{p.safety_message}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="text-slate-600 text-sm text-center py-4 border border-[#1e1e2e] rounded bg-[#13131a]">
+          No open positions on this account
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ── Risk Guardian ─────────────────────────────────────────────────────────────
+
+function RiskGuardian() {
+  const [form, setForm] = React.useState({
+    symbol: 'BTCUSDT', side: 'buy', size_usdt: 100,
+    leverage: 5, account_balance_usdt: 5000,
+    daily_pnl_usdt: 0, consecutive_losses: 0,
+  });
+  const [result, setResult] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+
+  const check = async () => {
+    setLoading(true);
+    try {
+      const data = await apiFetch('/risk/check', {
+        method: 'POST',
+        body: JSON.stringify({
+          ...form,
+          size_usdt: Number(form.size_usdt),
+          leverage: Number(form.leverage),
+          account_balance_usdt: Number(form.account_balance_usdt),
+          daily_pnl_usdt: Number(form.daily_pnl_usdt),
+          consecutive_losses: Number(form.consecutive_losses),
+        }),
+      });
+      setResult(data);
+    } catch (e) {
+      setResult({ error: e.message });
+    }
+    setLoading(false);
+  };
+
+  const inputCls = "bg-[#0a0a0f] border border-[#1e1e2e] rounded px-3 py-2 text-sm text-white w-full focus:outline-none focus:border-slate-500";
+  const labelCls = "text-slate-400 text-xs uppercase tracking-wide mb-1 block";
+
+  return (
+    <section className="px-6 py-6 border-b border-[#1e1e2e]">
+      <h2 className="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-4">Risk Guardian</h2>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+        <div>
+          <label className={labelCls}>Symbol</label>
+          <input className={inputCls} value={form.symbol}
+            onChange={e => setForm(f => ({...f, symbol: e.target.value}))} />
+        </div>
+        <div>
+          <label className={labelCls}>Side</label>
+          <select className={inputCls} value={form.side}
+            onChange={e => setForm(f => ({...f, side: e.target.value}))}>
+            <option value="buy">buy</option>
+            <option value="sell">sell</option>
+          </select>
+        </div>
+        <div>
+          <label className={labelCls}>Size (USDT)</label>
+          <input className={inputCls} type="number" value={form.size_usdt}
+            onChange={e => setForm(f => ({...f, size_usdt: e.target.value}))} />
+        </div>
+        <div>
+          <label className={labelCls}>Leverage</label>
+          <input className={inputCls} type="number" value={form.leverage}
+            onChange={e => setForm(f => ({...f, leverage: e.target.value}))} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+        <div>
+          <label className={labelCls}>Account Balance (USDT)</label>
+          <input className={inputCls} type="number" value={form.account_balance_usdt}
+            onChange={e => setForm(f => ({...f, account_balance_usdt: e.target.value}))} />
+        </div>
+        <div>
+          <label className={labelCls}>Daily PnL (USDT)</label>
+          <input className={inputCls} type="number" value={form.daily_pnl_usdt}
+            onChange={e => setForm(f => ({...f, daily_pnl_usdt: e.target.value}))} />
+        </div>
+        <div>
+          <label className={labelCls}>Consecutive Losses</label>
+          <input className={inputCls} type="number" value={form.consecutive_losses}
+            onChange={e => setForm(f => ({...f, consecutive_losses: e.target.value}))} />
+        </div>
+      </div>
+
+      <button
+        onClick={check}
+        disabled={loading}
+        className="bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white text-sm font-semibold px-5 py-2 rounded transition-colors"
+      >
+        {loading ? 'Checking…' : 'Check Risk'}
+      </button>
+
+      {result && !result.error && (
+        <div className={`mt-4 p-4 rounded border ${
+          result.approved
+            ? 'bg-green-900/20 border-green-800'
+            : 'bg-red-900/20 border-red-800'
+        }`}>
+          <div className="flex items-center gap-3 mb-2">
+            <span className={`text-lg font-black tracking-wider ${result.approved ? 'text-green-400' : 'text-red-400'}`}>
+              {result.approved ? '✓ APPROVED' : '✗ BLOCKED'}
+            </span>
+            {result.blocking_layer && (
+              <span className="text-xs text-slate-400">Layer: <span className="font-mono text-slate-300">{result.blocking_layer}</span></span>
+            )}
+          </div>
+          <div className="text-sm text-slate-300 mb-3">{result.reason}</div>
+
+          <div className="mb-2">
+            <div className="flex justify-between text-xs text-slate-400 mb-1">
+              <span>Risk Score</span>
+              <span className={result.risk_score >= 60 ? 'text-red-400' : result.risk_score >= 40 ? 'text-yellow-400' : 'text-green-400'}>
+                {result.risk_score} / 100
+              </span>
+            </div>
+            <div className="w-full bg-[#1e1e2e] rounded-full h-2">
+              <div
+                className={`h-2 rounded-full transition-all ${
+                  result.risk_score >= 60 ? 'bg-red-500' : result.risk_score >= 40 ? 'bg-yellow-500' : 'bg-green-500'
+                }`}
+                style={{ width: `${result.risk_score}%` }}
+              />
+            </div>
+          </div>
+
+          {result.warnings?.length > 0 && (
+            <div className="mt-2 space-y-1">
+              {result.warnings.map((w, i) => (
+                <div key={i} className="text-yellow-400 text-xs flex gap-2">
+                  <span>⚠</span><span>{w}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {result?.error && (
+        <div className="mt-4 p-3 bg-red-900/20 border border-red-800 rounded text-red-400 text-sm">
+          Error: {result.error}
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ── Strategy Intelligence ─────────────────────────────────────────────────────
+
+function StrategyIntelligence({ leaderboard }) {
+  if (!leaderboard || leaderboard.length === 0) {
+    return (
+      <section className="px-6 py-6 border-b border-[#1e1e2e]">
+        <h2 className="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-4">Strategy Intelligence</h2>
+        <div className="text-slate-600 text-sm text-center py-4 border border-[#1e1e2e] rounded bg-[#13131a]">
+          No strategy data yet — record trade results via POST /strategy/record
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="px-6 py-6 border-b border-[#1e1e2e]">
+      <h2 className="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-4">Strategy Intelligence</h2>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-[#1e1e2e]">
+              {['Strategy', 'Win Rate 7d', 'Win Rate 30d', 'Profit Factor', 'Total PnL', 'Trades', 'Verdict'].map(h => (
+                <th key={h} className="text-left text-xs text-slate-500 uppercase tracking-wide py-2 px-3 font-normal">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {leaderboard.map((row, i) => (
+              <tr key={i} className="border-b border-[#1e1e2e] hover:bg-[#13131a] transition-colors">
+                <td className="py-3 px-3 font-mono font-semibold text-white">{row.strategy_tag}</td>
+                <td className="py-3 px-3 text-slate-300">{(row.win_rate_7d * 100).toFixed(1)}%</td>
+                <td className="py-3 px-3 text-slate-300">{(row.win_rate_30d * 100).toFixed(1)}%</td>
+                <td className="py-3 px-3 font-semibold">
+                  <span className={row.profit_factor >= 1.2 ? 'text-green-400' : 'text-red-400'}>
+                    {row.profit_factor.toFixed(2)}
+                  </span>
+                </td>
+                <td className={`py-3 px-3 font-mono text-sm ${row.total_pnl_usdt >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {row.total_pnl_usdt >= 0 ? '+' : ''}${row.total_pnl_usdt.toFixed(2)}
+                </td>
+                <td className="py-3 px-3 text-slate-400">{row.total_trades}</td>
+                <td className="py-3 px-3">
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded border ${verdictColor(row.verdict)}`}>
+                    {row.verdict}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+// ── Audit Trail ───────────────────────────────────────────────────────────────
+
+function AuditTrail({ report }) {
+  const [verifyResult, setVerifyResult] = React.useState(null);
+  const [verifying, setVerifying] = React.useState(false);
+
+  const verify = async () => {
+    setVerifying(true);
+    try {
+      const data = await apiFetch('/audit/verify');
+      setVerifyResult(data);
+    } catch (e) {
+      setVerifyResult({ verified: false, error: e.message });
+    }
+    setVerifying(false);
+  };
+
+  return (
+    <section className="px-6 py-6">
+      <h2 className="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-4">Audit Trail</h2>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <StatCard label="Trade Intents" value={report?.total_trade_intents ?? '—'} />
+        <StatCard label="Risk Checks" value={report?.total_risk_checks ?? '—'} />
+        <StatCard label="Approval Rate" value={report ? `${report.approval_rate}%` : '—'} />
+        <StatCard label="Rejection Rate" value={report ? `${report.rejection_rate}%` : '—'} />
+      </div>
+
+      {report?.integrity_hash && (
+        <div className="mb-4">
+          <div className="text-slate-400 text-xs uppercase tracking-wide mb-2">SHA-256 Integrity Hash</div>
+          <div className="bg-[#13131a] border border-[#1e1e2e] rounded p-3">
+            <code className="font-mono text-xs text-green-400 break-all">{report.integrity_hash}</code>
+          </div>
+          {report.generated_at && (
+            <div className="text-slate-600 text-xs mt-1">Generated: {report.generated_at}</div>
+          )}
+        </div>
+      )}
+
+      <div className="flex items-center gap-3">
+        <button
+          onClick={verify}
+          disabled={verifying}
+          className="border border-[#1e1e2e] hover:border-slate-500 text-slate-300 hover:text-white text-sm px-4 py-2 rounded transition-colors disabled:opacity-50"
+        >
+          {verifying ? 'Verifying…' : 'Verify Integrity'}
+        </button>
+
+        {verifyResult && (
+          <div className={`flex items-center gap-2 text-sm font-semibold ${
+            verifyResult.verified ? 'text-green-400' : 'text-red-400'
+          }`}>
+            <span>{verifyResult.verified ? '✓' : '✗'}</span>
+            <span>{verifyResult.verified ? 'Integrity verified — hash matches all records' : 'Integrity check FAILED'}</span>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+
+function App() {
+  const [connected, setConnected]     = React.useState(false);
+  const [countdown, setCountdown]     = React.useState(REFRESH_INTERVAL);
+  const [summary, setSummary]         = React.useState(null);
+  const [positions, setPositions]     = React.useState(null);
+  const [leaderboard, setLeaderboard] = React.useState(null);
+  const [report, setReport]           = React.useState(null);
+
+  const refresh = React.useCallback(async () => {
+    try {
+      const [sum, pos, lb, rep] = await Promise.all([
+        apiFetch('/positions/summary'),
+        apiFetch('/positions'),
+        apiFetch('/strategy/leaderboard'),
+        apiFetch('/audit/report'),
+      ]);
+      setSummary(sum);
+      setPositions(pos);
+      setLeaderboard(lb);
+      setReport(rep);
+      setConnected(true);
+    } catch {
+      setConnected(false);
+    }
+    setCountdown(REFRESH_INTERVAL);
+  }, []);
+
+  // Initial fetch
+  React.useEffect(() => { refresh(); }, [refresh]);
+
+  // Countdown timer + auto-refresh
+  React.useEffect(() => {
+    const id = setInterval(() => {
+      setCountdown(c => {
+        if (c <= 1) { refresh(); return REFRESH_INTERVAL; }
+        return c - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [refresh]);
+
+  return (
+    <div className="min-h-screen" style={{ background: '#0a0a0f' }}>
+      <Header connected={connected} countdown={countdown} />
+
+      {!connected && <OfflineBanner />}
+
+      <main className="max-w-6xl mx-auto divide-y divide-[#1e1e2e]">
+        <AccountSafety summary={summary} positions={positions} />
+        <RiskGuardian />
+        <StrategyIntelligence leaderboard={leaderboard} />
+        <AuditTrail report={report} />
+      </main>
+
+      <footer className="text-center text-slate-700 text-xs py-6 border-t border-[#1e1e2e] mt-4">
+        BitSentry v0.1.0 — Bitget AI Base Camp Hackathon S1 — Track 2: Trading Infra
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
