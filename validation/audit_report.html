@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BitSentry Audit Report</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e2e8f0; padding: 2rem; }
+  h1 { font-size: 1.8rem; color: #f97316; margin-bottom: 0.25rem; }
+  .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 2rem; }
+  .integrity-box {
+    background: #1e293b; border: 2px solid #22c55e; border-radius: 8px;
+    padding: 1.25rem 1.5rem; margin-bottom: 2rem;
+  }
+  .integrity-box h2 { color: #22c55e; font-size: 1rem; margin-bottom: 0.5rem; }
+  .hash { font-family: monospace; font-size: 0.85rem; color: #86efac; word-break: break-all; }
+  .stats { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .stat {
+    background: #1e293b; border-radius: 8px; padding: 1rem 1.5rem;
+    flex: 1; min-width: 160px; text-align: center;
+  }
+  .stat .val { font-size: 2rem; font-weight: 700; color: #f97316; }
+  .stat .lbl { font-size: 0.8rem; color: #64748b; margin-top: 0.25rem; }
+  h3 { color: #cbd5e1; font-size: 1.1rem; margin: 1.5rem 0 0.75rem; }
+  .table-wrap { overflow-x: auto; margin-bottom: 1rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th { background: #1e293b; color: #94a3b8; padding: 0.6rem 0.75rem; text-align: left; white-space: nowrap; }
+  td { padding: 0.55rem 0.75rem; border-bottom: 1px solid #1e293b; vertical-align: top; }
+  tr:hover td { background: #1e293b44; }
+  .empty { color: #475569; text-align: center; padding: 1rem; }
+  .footer { margin-top: 2rem; color: #334155; font-size: 0.78rem; }
+</style>
+</head>
+<body>
+<h1>BitSentry Audit Report</h1>
+<p class="subtitle">Generated at 2026-06-25T13:26:09.595821+00:00</p>
+
+<div class="integrity-box">
+  <h2>SHA-256 Integrity Hash</h2>
+  <div class="hash">9d901ca853c1e4815142df3c6491afa06d4225ff39cec4ca18007355bed9c747</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="val">1</div><div class="lbl">Trade Intents</div></div>
+  <div class="stat"><div class="val">2</div><div class="lbl">Risk Checks</div></div>
+  <div class="stat"><div class="val">0.0%</div><div class="lbl">Approval Rate</div></div>
+  <div class="stat"><div class="val">100.0%</div><div class="lbl">Rejection Rate</div></div>
+</div>
+
+<h3>Trade Intents</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>id</th><th>timestamp</th><th>symbol</th><th>side</th><th>size</th><th>leverage</th><th>signal_source</th><th>reasoning</th><th>approved</th><th>block_reason</th></tr></thead>
+<tbody><tr><td>1</td><td>2026-06-25T13:26:09.592440+00:00</td><td>BTCUSDT</td><td>buy</td><td>0.01</td><td>5.0</td><td>test_signal</td><td>RSI below 30, strong volume</td><td>0</td><td>None</td></tr></tbody>
+</table>
+</div>
+
+<h3>Risk Checks</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>id</th><th>timestamp</th><th>symbol</th><th>layer_name</th><th>passed</th><th>reason</th><th>value_checked</th><th>threshold</th></tr></thead>
+<tbody><tr><td>2</td><td>2026-06-25T13:26:09.593827+00:00</td><td>BTCUSDT</td><td>daily_loss</td><td>0</td><td>Daily loss limit reached</td><td>3.1</td><td>3.0</td></tr>
+<tr><td>1</td><td>2026-06-25T13:26:09.593427+00:00</td><td>BTCUSDT</td><td>position_size</td><td>1</td><td>Within 5% limit</td><td>0.01</td><td>0.05</td></tr></tbody>
+</table>
+</div>
+
+<h3>Strategy Checkpoints</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>id</th><th>timestamp</th><th>strategy_tag</th><th>win_rate_7d</th><th>win_rate_30d</th><th>total_trades</th><th>verdict</th><th>market_condition</th></tr></thead>
+<tbody><tr><td>1</td><td>2026-06-25T13:26:09.594188+00:00</td><td>momentum-v1</td><td>0.62</td><td>0.58</td><td>45</td><td>PERFORMING</td><td>trending_up</td></tr></tbody>
+</table>
+</div>
+
+<div class="footer">
+  BitSentry &mdash; Safety &amp; Audit Layer for Bitget &mdash;
+  Integrity hash covers all records in all three tables.
+</div>
+</body>
+</html>

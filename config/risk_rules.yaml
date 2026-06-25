@@ -1,0 +1,11 @@
+risk_rules:
+  max_position_size_pct: 5.0
+  daily_loss_limit_pct: 3.0
+  consecutive_loss_limit: 3
+  leverage_cap: 10
+  allowed_symbols:
+    - BTCUSDT
+    - ETHUSDT
+    - SOLUSDT
+    - BNBUSDT
+  blocked_symbols: []

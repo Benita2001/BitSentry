@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bitsentry"
+version = "0.1.0"
+description = "Safety, audit, and intelligence layer for Bitget trading agents and traders"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "httpx>=0.25.0",
+    "rich>=13.0.0",
+    "pyyaml>=6.0.0",
+]
+
+[project.scripts]
+bitsentry = "bitsentry.cli:main"
