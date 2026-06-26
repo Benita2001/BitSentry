@@ -7,6 +7,8 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from bitsentry.audit_engine import AuditEngine
@@ -76,6 +78,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve dashboard static files at /dashboard/*
+_dashboard_path = os.path.join(os.path.dirname(__file__), "../../dashboard")
+if os.path.exists(_dashboard_path):
+    app.mount("/dashboard", StaticFiles(directory=_dashboard_path, html=True), name="dashboard")
+
 
 # ── Request / response models ─────────────────────────────────────────────────
 
@@ -100,6 +107,12 @@ class RecordTradeRequest(BaseModel):
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
+
+@app.get("/ui")
+async def serve_dashboard():
+    dashboard_file = os.path.join(os.path.dirname(__file__), "../../dashboard/index.html")
+    return FileResponse(dashboard_file)
+
 
 @app.get("/")
 def root():
