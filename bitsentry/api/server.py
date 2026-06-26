@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from bitsentry.audit_engine import AuditEngine
 from bitsentry.bgc_client import BGCClient, BGCError
 from bitsentry.position_monitor import PositionMonitor
+from bitsentry.reporter import ReportGenerator
 from bitsentry.risk_guardian import RiskGuardian
 from bitsentry.strategy_evaluator import StrategyEvaluator
 
@@ -48,12 +49,19 @@ async def lifespan(application: FastAPI):
     monitor = PositionMonitor(bgc_client=client, audit_engine=audit) if client else None
     evaluator = StrategyEvaluator(audit_engine=audit)
 
+    reporter = ReportGenerator(
+        audit_engine=audit,
+        strategy_evaluator=evaluator,
+        position_monitor=monitor,
+    )
+
     _state.update({
         "client": client,
         "audit": audit,
         "guardian": guardian,
         "monitor": monitor,
         "evaluator": evaluator,
+        "reporter": reporter,
         "demo": demo,
     })
 
@@ -224,3 +232,42 @@ def audit_verify():
     integrity_hash = report["integrity_hash"]
     verified = audit.verify_integrity(integrity_hash)
     return {"verified": verified, "hash": integrity_hash}
+
+
+# ── Reports ───────────────────────────────────────────────────────────────────
+
+class SendReportRequest(BaseModel):
+    type: str  # "daily" | "weekly" | "monthly"
+
+
+@app.get("/report/daily")
+def report_daily():
+    reporter: ReportGenerator = _state["reporter"]
+    return {"report": reporter.generate_daily_report()}
+
+
+@app.get("/report/weekly")
+def report_weekly():
+    reporter: ReportGenerator = _state["reporter"]
+    return {"report": reporter.generate_weekly_report()}
+
+
+@app.get("/report/monthly")
+def report_monthly():
+    reporter: ReportGenerator = _state["reporter"]
+    return {"report": reporter.generate_monthly_report()}
+
+
+@app.post("/report/send")
+def report_send(body: SendReportRequest):
+    reporter: ReportGenerator = _state["reporter"]
+    t = body.type.lower()
+    if t == "daily":
+        sent = reporter.send_daily_report()
+    elif t == "weekly":
+        sent = reporter.send_weekly_report()
+    elif t == "monthly":
+        sent = reporter.send_monthly_report()
+    else:
+        raise HTTPException(400, f"Unknown report type '{body.type}'. Use daily, weekly, or monthly.")
+    return {"sent": sent, "type": t}
