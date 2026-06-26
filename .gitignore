@@ -3,6 +3,7 @@ __pycache__/
 *.pyo
 .env
 validation/*.json
+validation/audit_report.html
 *.db
 dist/
 build/

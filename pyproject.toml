@@ -8,6 +8,18 @@ version = "0.1.0"
 description = "Safety, audit, and intelligence layer for Bitget trading agents and traders"
 readme = "README.md"
 requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+  {name = "Benita Chidera", email = "0xbeni123@gmail.com"}
+]
+keywords = ["bitget", "trading", "risk-management", "audit", "crypto", "agent", "mcp"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Office/Business :: Financial :: Investment",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License"
+]
 dependencies = [
     "fastapi>=0.104.0",
     "uvicorn>=0.24.0",
@@ -16,7 +28,16 @@ dependencies = [
     "httpx>=0.25.0",
     "rich>=13.0.0",
     "pyyaml>=6.0.0",
+    "requests>=2.31.0",
+    "mcp>=1.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Benita2001/BitSentry"
+Repository = "https://github.com/Benita2001/BitSentry"
 
 [project.scripts]
 bitsentry = "bitsentry.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["bitsentry"]
