@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BitSentry — Safety Layer for Bitget Trading Agents</title>
+<meta name="description" content="BitSentry wraps every trade decision with risk enforcement, audit logging, and market intelligence. Built for Bitget Agent Hub.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0a0a0f;
+    --surface:  #0f172a;
+    --surface2: #141d2e;
+    --border:   #1e293b;
+    --green:    #22c55e;
+    --yellow:   #facc15;
+    --red:      #ef4444;
+    --blue:     #3b82f6;
+    --orange:   #f97316;
+    --purple:   #a855f7;
+    --text:     #f8fafc;
+    --muted:    #94a3b8;
+    --mono:     'JetBrains Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    gap: 16px;
+  }
+
+  .nav-logo {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--green);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .nav-logo span { color: var(--muted); font-weight: 400; }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover { color: var(--text); border-color: #334155; }
+
+  .btn-copy-nav {
+    background: var(--green);
+    color: #000;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--mono);
+    white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+
+  .btn-copy-nav:hover { opacity: 0.85; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 96px 0 72px;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--green);
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--muted);
+    max-width: 640px;
+    margin: 0 auto 36px;
+    line-height: 1.65;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .btn-primary {
+    background: var(--green);
+    color: #000;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    transition: opacity 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover { opacity: 0.87; }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: border-color 0.15s, background 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-outline:hover { border-color: #334155; background: var(--surface); }
+
+  .hero-badges {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid;
+    letter-spacing: 0.02em;
+  }
+
+  .badge-green  { border-color: var(--green);  color: var(--green);  background: rgba(34,197,94,0.08); }
+  .badge-blue   { border-color: var(--blue);   color: var(--blue);   background: rgba(59,130,246,0.08); }
+  .badge-yellow { border-color: var(--yellow); color: var(--yellow); background: rgba(250,204,21,0.08); }
+  .badge-muted  { border-color: var(--border); color: var(--muted);  background: transparent; }
+
+  /* ── LIVE STATS BAR ── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    padding: 18px 24px;
+    text-align: left;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-sub {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .pulse {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-right: 5px;
+    vertical-align: middle;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 80px 0; }
+  section + section { border-top: 1px solid var(--border); }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .section-sub {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin-bottom: 52px;
+    line-height: 1.65;
+  }
+
+  /* ── PROBLEM ── */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+  }
+
+  .problem-icon {
+    font-size: 2rem;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .problem-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .problem-card p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── LAYERS ── */
+  .layers-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    max-width: 780px;
+  }
+
+  .layer-connector {
+    width: 2px;
+    height: 20px;
+    background: var(--border);
+    margin-left: 30px;
+  }
+
+  .layer-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 20px;
+    align-items: start;
+    border-left: 3px solid;
+  }
+
+  .layer-num {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .layer-body h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .layer-body p {
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .layer-badge {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    border: 1px solid;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── MARKET INTEL ── */
+  .intel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .intel-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+  }
+
+  .intel-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .intel-card p {
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+
+  .intel-live {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+  }
+
+  .intel-live strong {
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* ── INSTALLATION ── */
+  .steps { display: flex; flex-direction: column; gap: 24px; max-width: 760px; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--green);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-content h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .code-block {
+    position: relative;
+    background: #060910;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-lang {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .btn-copy {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    font-family: inherit;
+  }
+
+  .btn-copy:hover { color: var(--text); border-color: #334155; }
+  .btn-copy.copied { color: var(--green); border-color: var(--green); }
+
+  pre {
+    padding: 16px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: #cbd5e1;
+  }
+
+  pre .kw  { color: #7dd3fc; }
+  pre .str { color: #86efac; }
+  pre .cm  { color: #475569; }
+  pre .key { color: #facc15; }
+
+  /* ── DEMO VIDEO ── */
+  .demo-placeholder {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 80px 40px;
+    text-align: center;
+    max-width: 720px;
+  }
+
+  .play-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 1.5rem;
+  }
+
+  .demo-placeholder h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .demo-placeholder p {
+    font-size: 0.875rem;
+    color: #475569;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .footer-copy {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer-link {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+
+  .footer-link:hover { color: var(--green); }
+
+  .footer-built {
+    font-size: 0.78rem;
+    color: #475569;
+  }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    z-index: 999;
+    font-family: var(--mono);
+  }
+
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .stats-bar { grid-template-columns: 1fr; }
+    .layer-card { grid-template-columns: 44px 1fr; }
+    .layer-badge { grid-column: 2; }
+    .nav-links { gap: 6px; }
+    .nav-link { display: none; }
+    section { padding: 56px 0; }
+  }
+
+  @media (max-width: 480px) {
+    .hero { padding: 64px 0 56px; }
+    .step { grid-template-columns: 32px 1fr; gap: 14px; }
+    .step-num { width: 32px; height: 32px; font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ NAV ══════════════════════════ -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo">BitSentry <span>v0.2.0</span></div>
+      <div class="nav-links">
+        <a href="https://github.com/Benita2001/BitSentry" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+        <a href="https://pypi.org/project/bitsentry/" target="_blank" rel="noopener" class="nav-link">PyPI</a>
+        <button class="btn-copy-nav" onclick="copy('pip install bitsentry', this)">pip install bitsentry</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════ HERO ══════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <h1>Safety Layer for<br><em>Bitget Trading Agents</em></h1>
+    <p class="hero-sub">BitSentry wraps every trade decision with risk enforcement, audit logging, and market intelligence. Built for Bitget Agent Hub.</p>
+
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="copy('pip install bitsentry', this)">
+        <span>$</span> pip install bitsentry
+      </button>
+      <a href="https://github.com/Benita2001/BitSentry" target="_blank" rel="noopener" class="btn-outline">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+
+    <div class="hero-badges">
+      <span class="badge badge-green">PyPI v0.2.0</span>
+      <span class="badge badge-blue">MCP Ready</span>
+      <span class="badge badge-yellow">Bitget Agent Hub Compatible</span>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-label"><span class="pulse"></span>BTC Price</div>
+        <div class="stat-value" id="btc-price">Loading…</div>
+        <div class="stat-sub" id="btc-change">via Bitget API</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><span class="pulse"></span>Fear &amp; Greed</div>
+        <div class="stat-value" id="fg-value">Loading…</div>
+        <div class="stat-sub" id="fg-label">via alternative.me</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Market Status</div>
+        <div class="stat-value" id="mkt-status" style="font-size:1rem;font-family:inherit;font-weight:700;">—</div>
+        <div class="stat-sub" id="mkt-action">BitSentry assessment</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ PROBLEM ══════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">The Problem</div>
+    <h2 class="section-title">Trading Agents Are Flying Blind</h2>
+    <p class="section-sub">Most trading agents connect directly to exchanges with no safety layer between intention and execution.</p>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <span class="problem-icon">⚠️</span>
+        <h3>Black Box Agents</h3>
+        <p>When your agent loses money, you don't know why. No decision trail. No accountability. Just a smaller balance.</p>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">💥</span>
+        <h3>No Risk Controls</h3>
+        <p>Agents trade without leverage caps, position limits, or loss circuit breakers. One bad trade wipes the account.</p>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">📉</span>
+        <h3>Dead Strategies</h3>
+        <p>Strategies degrade silently. Your agent keeps running a broken strategy while you watch the losses mount.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ SOLUTION — 5 LAYERS ══════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">The Solution</div>
+    <h2 class="section-title">5 Layers of Protection</h2>
+    <p class="section-sub">Every trade passes through all 5 layers before touching Bitget.</p>
+
+    <div class="layers-stack">
+
+      <div class="layer-card" style="border-left-color:#22c55e;">
+        <div class="layer-num" style="background:rgba(34,197,94,0.1);color:#22c55e;">1</div>
+        <div class="layer-body">
+          <h3>Risk Guardian</h3>
+          <p>5-layer pre-trade check. Leverage cap, position size limit, daily loss circuit breaker, consecutive loss throttle, and market condition filter with live Fear &amp; Greed and volatility data.</p>
+        </div>
+        <span class="layer-badge" style="border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,0.07);">PROCEED / REDUCE_SIZE / WAIT / BLOCKED</span>
+      </div>
+
+      <div class="layer-connector"></div>
+
+      <div class="layer-card" style="border-left-color:#3b82f6;">
+        <div class="layer-num" style="background:rgba(59,130,246,0.1);color:#3b82f6;">2</div>
+        <div class="layer-body">
+          <h3>Audit Engine</h3>
+          <p>Every decision logged to SQLite with SHA-256 integrity verification. Tamper-proof. Reproducible. Judges and auditors can verify the full decision trail independently.</p>
+        </div>
+        <span class="layer-badge" style="border-color:#3b82f6;color:#3b82f6;background:rgba(59,130,246,0.07);">integrity_hash: SHA-256</span>
+      </div>
+
+      <div class="layer-connector"></div>
+
+      <div class="layer-card" style="border-left-color:#facc15;">
+        <div class="layer-num" style="background:rgba(250,204,21,0.1);color:#facc15;">3</div>
+        <div class="layer-body">
+          <h3>Position Monitor</h3>
+          <p>Real-time safety ratings for every open Bitget position based on margin distance and unrealized PnL percentage. Blocks new entries when existing positions are already stressed.</p>
+        </div>
+        <span class="layer-badge" style="border-color:#facc15;color:#facc15;background:rgba(250,204,21,0.07);">GREEN / YELLOW / RED</span>
+      </div>
+
+      <div class="layer-connector"></div>
+
+      <div class="layer-card" style="border-left-color:#f97316;">
+        <div class="layer-num" style="background:rgba(249,115,22,0.1);color:#f97316;">4</div>
+        <div class="layer-body">
+          <h3>Strategy Evaluator</h3>
+          <p>Rolling win rate over 7d and 30d windows with profit factor scoring. Detects when strategies degrade before they destroy accounts. Stops the agent before it's too late.</p>
+        </div>
+        <span class="layer-badge" style="border-color:#f97316;color:#f97316;background:rgba(249,115,22,0.07);">PERFORMING / DEGRADING / DEAD</span>
+      </div>
+
+      <div class="layer-connector"></div>
+
+      <div class="layer-card" style="border-left-color:#a855f7;">
+        <div class="layer-num" style="background:rgba(168,85,247,0.1);color:#a855f7;">5</div>
+        <div class="layer-body">
+          <h3>Report Generator</h3>
+          <p>Daily, weekly, and monthly trading summaries sent automatically to Telegram. Your agent reports to you, not the other way around. Includes SHA-256 verified audit integrity status.</p>
+        </div>
+        <span class="layer-badge" style="border-color:#a855f7;color:#a855f7;background:rgba(168,85,247,0.07);">Telegram: Daily 23:00 UTC</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ MARKET INTELLIGENCE ══════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">Market Intelligence</div>
+    <h2 class="section-title">Market-Aware Risk</h2>
+    <p class="section-sub">BitSentry reads live market conditions before approving every trade.</p>
+
+    <div class="intel-grid">
+      <div class="intel-card">
+        <h3>Fear &amp; Greed Index</h3>
+        <p>When Fear &amp; Greed hits Extreme Greed (&gt;75), BitSentry reduces long position sizes by 50%. When Extreme Fear (&lt;25), short sizes are reduced to protect against counter-trend capitulation.</p>
+        <div class="intel-live">
+          Live index: <strong id="intel-fg">Loading…</strong>
+        </div>
+      </div>
+      <div class="intel-card">
+        <h3>Funding Rate</h3>
+        <p>High positive funding means longs are paying heavily. BitSentry flags this as a warning so agents avoid expensive carry costs and consider timing their entry more carefully.</p>
+        <div class="intel-live">
+          Source: <strong>Bitget futures API via bgc</strong>
+        </div>
+      </div>
+      <div class="intel-card">
+        <h3>Volatility Filter</h3>
+        <p>When 24h volatility exceeds 4%, BitSentry caps leverage recommendations to 5x to protect against liquidation in fast-moving and choppy market conditions.</p>
+        <div class="intel-live">
+          Calculated from: <strong>live Bitget OHLCV data</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ INSTALLATION ══════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">Installation</div>
+    <h2 class="section-title">Get Started in 4 Steps</h2>
+    <p class="section-sub">BitSentry works alongside Bitget Agent Hub with zero conflict.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Install Bitget Agent Hub</h3>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">bash</span>
+              <button class="btn-copy" onclick="copyBlock(this)">Copy</button>
+            </div>
+            <pre>npx bitget-hub upgrade-all --target claude</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Set credentials (same as Agent Hub)</h3>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">bash</span>
+              <button class="btn-copy" onclick="copyBlock(this)">Copy</button>
+            </div>
+            <pre><span class="kw">export</span> BITGET_API_KEY=<span class="str">"your_api_key"</span>
+<span class="kw">export</span> BITGET_SECRET_KEY=<span class="str">"your_secret_key"</span>
+<span class="kw">export</span> BITGET_PASSPHRASE=<span class="str">"your_passphrase"</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Install BitSentry</h3>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">bash</span>
+              <button class="btn-copy" onclick="copyBlock(this)">Copy</button>
+            </div>
+            <pre>pip install bitsentry</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Add to Claude Code MCP config</h3>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">json</span>
+              <button class="btn-copy" onclick="copyBlock(this)">Copy</button>
+            </div>
+            <pre>{
+  <span class="key">"mcpServers"</span>: {
+    <span class="key">"bitget"</span>: {
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"bitget-mcp-server"</span>]
+    },
+    <span class="key">"bitsentry"</span>: {
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@0xbeni/bitsentry-mcp"</span>]
+    }
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ DEMO VIDEO ══════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">Demo</div>
+    <h2 class="section-title">See It In Action</h2>
+    <p class="section-sub">Watch BitSentry intercept a risky trade decision in real time.</p>
+
+    <!-- Replace this div with YouTube embed after recording demo -->
+    <div class="demo-placeholder">
+      <div class="play-icon">▶</div>
+      <h3>Demo video coming soon</h3>
+      <p>Recording in progress — check back after the hackathon submission.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FOOTER ══════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-copy">
+        BitSentry v0.2.0 — Built for Bitget AI Base Camp Hackathon S1 — Track 2: Trading Infra
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/Benita2001/BitSentry" target="_blank" rel="noopener" class="footer-link">GitHub</a>
+        <a href="https://pypi.org/project/bitsentry/" target="_blank" rel="noopener" class="footer-link">PyPI</a>
+        <a href="https://www.npmjs.com/package/@0xbeni/bitsentry-mcp" target="_blank" rel="noopener" class="footer-link">npm</a>
+        <a href="https://x.com/0xbeni" target="_blank" rel="noopener" class="footer-link">@0xbeni on X</a>
+      </div>
+      <div class="footer-built">Built by @0xbeni</div>
+    </div>
+  </div>
+</footer>
+
+<div id="toast">Copied!</div>
+
+<script>
+  // ── Copy helpers ──────────────────────────────────────────────────────────
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg || 'Copied!';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function copy(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('✓ Copied to clipboard');
+      if (btn) {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1800);
+      }
+    }).catch(() => showToast('Copy failed'));
+  }
+
+  function copyBlock(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      showToast('✓ Copied to clipboard');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 1800);
+    });
+  }
+
+  // ── Live data fetch ───────────────────────────────────────────────────────
+
+  function fgColor(val) {
+    if (val <= 25) return '#ef4444';
+    if (val <= 45) return '#f97316';
+    if (val <= 55) return '#facc15';
+    if (val <= 75) return '#22c55e';
+    return '#3b82f6';
+  }
+
+  function fgMarketStatus(val, label) {
+    if (val <= 10) return ['EXTREME FEAR — WAIT', '#ef4444', 'Short sizes reduced 50%'];
+    if (val <= 25) return ['EXTREME FEAR', '#ef4444', 'BitSentry: reduce shorts 50%'];
+    if (val <= 45) return ['FEAR', '#f97316', 'BitSentry: proceed with caution'];
+    if (val <= 55) return ['NEUTRAL', '#facc15', 'BitSentry: normal rules apply'];
+    if (val <= 75) return ['GREED', '#22c55e', 'BitSentry: proceed normally'];
+    if (val <= 90) return ['EXTREME GREED', '#3b82f6', 'BitSentry: reduce longs 50%'];
+    return ['EXTREME GREED — WAIT', '#3b82f6', 'Long sizes reduced 50%'];
+  }
+
+  async function fetchLiveData() {
+    // Fear & Greed
+    try {
+      const r = await fetch('https://api.alternative.me/fng/?limit=1');
+      const d = await r.json();
+      const entry = d.data[0];
+      const val = parseInt(entry.value);
+      const label = entry.value_classification;
+
+      document.getElementById('fg-value').textContent = val;
+      document.getElementById('fg-value').style.color = fgColor(val);
+      document.getElementById('fg-label').textContent = label;
+      document.getElementById('intel-fg').textContent = `${val} — ${label}`;
+
+      const [statusText, statusColor, actionText] = fgMarketStatus(val, label);
+      document.getElementById('mkt-status').textContent = statusText;
+      document.getElementById('mkt-status').style.color = statusColor;
+      document.getElementById('mkt-action').textContent = actionText;
+    } catch (e) {
+      document.getElementById('fg-value').textContent = '—';
+      document.getElementById('intel-fg').textContent = 'Unavailable';
+    }
+
+    // BTC Price
+    try {
+      const r = await fetch('https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT');
+      const d = await r.json();
+      const ticker = d.data[0];
+      const price = parseFloat(ticker.lastPr);
+      const change = parseFloat(ticker.change24h) * 100;
+      const changeSign = change >= 0 ? '+' : '';
+
+      document.getElementById('btc-price').textContent =
+        '$' + price.toLocaleString('en-US', { maximumFractionDigits: 2 });
+      document.getElementById('btc-price').style.color =
+        change >= 0 ? 'var(--green)' : 'var(--red)';
+      document.getElementById('btc-change').textContent =
+        `${changeSign}${change.toFixed(2)}% 24h`;
+      document.getElementById('btc-change').style.color =
+        change >= 0 ? 'var(--green)' : 'var(--red)';
+    } catch (e) {
+      document.getElementById('btc-price').textContent = '—';
+      document.getElementById('btc-change').textContent = 'API unavailable';
+    }
+  }
+
+  fetchLiveData();
+  setInterval(fetchLiveData, 60000);
+</script>
+</body>
+</html>
