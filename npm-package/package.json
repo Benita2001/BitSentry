@@ -1,0 +1,32 @@
+{
+  "name": "@0xbeni/bitsentry-mcp",
+  "version": "0.2.2",
+  "description": "BitSentry MCP server - Safety, audit, and intelligence layer for Bitget trading agents",
+  "main": "index.js",
+  "bin": {
+    "bitsentry-mcp": "index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "bitget",
+    "trading",
+    "mcp",
+    "risk-management",
+    "audit",
+    "crypto",
+    "agent",
+    "bitsentry"
+  ],
+  "author": "0xbeni",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Benita2001/BitSentry.git"
+  },
+  "homepage": "https://github.com/Benita2001/BitSentry",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

@@ -2,6 +2,35 @@
 
 Safety, audit, and intelligence layer for Bitget trading agents and traders.
 
+## Quick Start
+
+### Option 1 — MCP (Recommended for AI agents)
+
+Add to Claude Code config (`~/.claude/settings.json`):
+
+```json
+{
+  "mcpServers": {
+    "bitsentry": {
+      "command": "npx",
+      "args": ["-y", "@0xbeni/bitsentry-mcp"],
+      "env": {
+        "BITGET_API_KEY": "your_api_key",
+        "BITGET_SECRET_KEY": "your_secret_key",
+        "BITGET_PASSPHRASE": "your_passphrase",
+        "BITGET_DEMO_MODE": "true"
+      }
+    }
+  }
+}
+```
+
+### Option 2 — Python library
+
+```bash
+pip install bitsentry
+```
+
 ## Structure
 
 - `bitsentry/bgc_client.py` — Bitget API client
