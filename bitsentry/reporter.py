@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from bitsentry.position_monitor import PositionMonitor
     from bitsentry.strategy_evaluator import StrategyEvaluator
 
-_VERSION = "0.1.0"
+_VERSION = "0.2.0"
 
 
 def _now_utc() -> datetime:

@@ -1,5 +1,5 @@
 # bitsentry — Safety, audit, and intelligence layer for Bitget trading agents
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from bitsentry.bgc_client import BGCClient
 from bitsentry.audit_engine import AuditEngine
