@@ -7,7 +7,7 @@ risk_rules:
   - BTCUSDT
   - ETHUSDT
   - SOLUSDT
-  - BNBUSDT
+  - DOGEUSDT
   blocked_symbols: []
   market_conditions:
     fear_greed_extreme_greed: 75
