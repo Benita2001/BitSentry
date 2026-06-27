@@ -1,11 +1,20 @@
 risk_rules:
+  leverage_cap: 10
   max_position_size_pct: 5.0
   daily_loss_limit_pct: 3.0
   consecutive_loss_limit: 3
-  leverage_cap: 10
   allowed_symbols:
-    - BTCUSDT
-    - ETHUSDT
-    - SOLUSDT
-    - BNBUSDT
+  - BTCUSDT
+  - ETHUSDT
+  - SOLUSDT
+  - BNBUSDT
   blocked_symbols: []
+  market_conditions:
+    fear_greed_extreme_greed: 75
+    fear_greed_extreme_fear: 25
+    funding_rate_high: 0.1
+    funding_rate_negative: -0.05
+    volatility_high_pct: 4.0
+    volatility_leverage_cap: 5
+  size_reduction_factor: 0.5
+  leverage_reduction_factor: 0.5

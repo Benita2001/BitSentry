@@ -68,6 +68,9 @@ def check_risk(
     consecutive_losses: int,
 ) -> dict:
     """Check if a trade is safe to execute according to BitSentry risk rules.
+    Fetches live Fear & Greed index, funding rate, and 24h volatility.
+    Returns agent_instruction (PROCEED/REDUCE_SIZE/REDUCE_SIZE_AND_LEVERAGE/WAIT/BLOCKED),
+    recommended_size_usdt, recommended_leverage, and all market intelligence fields.
     Call this before placing any order on Bitget."""
     result = _guardian.check(
         symbol=symbol,
@@ -161,6 +164,52 @@ def get_audit_report() -> dict:
     """Get the full BitSentry audit report with SHA-256 integrity hash.
     Use this to verify all trading decisions are logged."""
     return _audit.generate_audit_report()
+
+
+# ── Tool 7: manage_symbols ────────────────────────────────────────────────────
+
+@mcp.tool()
+def manage_symbols(action: str, symbol: str = "") -> dict:
+    """Add or remove trading symbols from the allowed or blocked list.
+    Use this to control which pairs the agent can trade.
+
+    action options:
+      'allow'        — add symbol to allowed list
+      'remove_allow' — remove symbol from allowed list
+      'block'        — add symbol to blocked list
+      'remove_block' — remove symbol from blocked list
+      'list'         — return current allowed and blocked lists (symbol not needed)
+    """
+    action = action.lower().strip()
+    sym = symbol.upper().strip() if symbol else ""
+
+    if action == "list":
+        return _guardian.get_symbol_lists()
+
+    if not sym:
+        return {"error": "symbol is required for this action"}
+
+    if action == "allow":
+        added = _guardian.add_allowed_symbol(sym)
+        return {"action": "allow", "symbol": sym, "added": added,
+                "allowed": _guardian.get_symbol_lists()["allowed"]}
+
+    if action == "remove_allow":
+        removed = _guardian.remove_allowed_symbol(sym)
+        return {"action": "remove_allow", "symbol": sym, "removed": removed,
+                "allowed": _guardian.get_symbol_lists()["allowed"]}
+
+    if action == "block":
+        blocked = _guardian.add_blocked_symbol(sym)
+        return {"action": "block", "symbol": sym, "blocked": blocked,
+                "blocked_list": _guardian.get_symbol_lists()["blocked"]}
+
+    if action == "remove_block":
+        removed = _guardian.remove_blocked_symbol(sym)
+        return {"action": "remove_block", "symbol": sym, "removed": removed,
+                "blocked_list": _guardian.get_symbol_lists()["blocked"]}
+
+    return {"error": f"Unknown action '{action}'. Use: allow, remove_allow, block, remove_block, list"}
 
 
 # ── Entrypoint ────────────────────────────────────────────────────────────────

@@ -36,14 +36,20 @@ class AuditEngine:
                 );
 
                 CREATE TABLE IF NOT EXISTS risk_checks (
-                    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp       TEXT NOT NULL,
-                    symbol          TEXT NOT NULL,
-                    layer_name      TEXT NOT NULL,
-                    passed          INTEGER NOT NULL,
-                    reason          TEXT,
-                    value_checked   REAL,
-                    threshold       REAL
+                    id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+                    timestamp             TEXT NOT NULL,
+                    symbol                TEXT NOT NULL,
+                    layer_name            TEXT NOT NULL,
+                    passed                INTEGER NOT NULL,
+                    reason                TEXT,
+                    value_checked         REAL,
+                    threshold             REAL,
+                    fear_greed_index      INTEGER,
+                    funding_rate          REAL,
+                    volatility_24h        REAL,
+                    agent_instruction     TEXT,
+                    recommended_size_usdt REAL,
+                    recommended_leverage  INTEGER
                 );
 
                 CREATE TABLE IF NOT EXISTS strategy_checkpoints (
@@ -57,6 +63,24 @@ class AuditEngine:
                     market_condition TEXT
                 );
             """)
+
+        # Migrate existing databases that predate the new risk_checks columns
+        _new_cols = [
+            ("fear_greed_index",      "INTEGER"),
+            ("funding_rate",          "REAL"),
+            ("volatility_24h",        "REAL"),
+            ("agent_instruction",     "TEXT"),
+            ("recommended_size_usdt", "REAL"),
+            ("recommended_leverage",  "INTEGER"),
+        ]
+        with self._conn() as conn:
+            for col_name, col_type in _new_cols:
+                try:
+                    conn.execute(
+                        f"ALTER TABLE risk_checks ADD COLUMN {col_name} {col_type}"
+                    )
+                except sqlite3.OperationalError:
+                    pass  # column already exists
 
     def _conn(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self.db_path)
@@ -103,18 +127,28 @@ class AuditEngine:
         reason: str = "",
         value_checked: float | None = None,
         threshold: float | None = None,
+        fear_greed_index: int | None = None,
+        funding_rate: float | None = None,
+        volatility_24h: float | None = None,
+        agent_instruction: str | None = None,
+        recommended_size_usdt: float | None = None,
+        recommended_leverage: int | None = None,
     ) -> int:
         with self._conn() as conn:
             cur = conn.execute(
                 """
                 INSERT INTO risk_checks
                     (timestamp, symbol, layer_name, passed, reason,
-                     value_checked, threshold)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                     value_checked, threshold,
+                     fear_greed_index, funding_rate, volatility_24h,
+                     agent_instruction, recommended_size_usdt, recommended_leverage)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
-                    self._now(), symbol, layer_name, int(passed),
-                    reason, value_checked, threshold,
+                    self._now(), symbol, layer_name, int(passed), reason,
+                    value_checked, threshold,
+                    fear_greed_index, funding_rate, volatility_24h,
+                    agent_instruction, recommended_size_usdt, recommended_leverage,
                 ),
             )
             return cur.lastrowid
@@ -183,7 +217,7 @@ class AuditEngine:
                 "SELECT COUNT(*) FROM trade_intents WHERE approved = 1"
             ).fetchone()[0]
 
-        approval_rate = (approved_count / total_intents * 100) if total_intents else 0.0
+        approval_rate  = (approved_count / total_intents * 100) if total_intents else 0.0
         rejection_rate = 100.0 - approval_rate if total_intents else 0.0
 
         return {
@@ -236,8 +270,10 @@ class AuditEngine:
             "signal_source", "reasoning", "approved", "block_reason",
         ]
         check_cols = [
-            "id", "timestamp", "symbol", "layer_name", "passed",
-            "reason", "value_checked", "threshold",
+            "id", "timestamp", "symbol", "layer_name", "passed", "reason",
+            "value_checked", "threshold", "agent_instruction",
+            "fear_greed_index", "funding_rate", "volatility_24h",
+            "recommended_size_usdt", "recommended_leverage",
         ]
         cp_cols = [
             "id", "timestamp", "strategy_tag", "win_rate_7d", "win_rate_30d",

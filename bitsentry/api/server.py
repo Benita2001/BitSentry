@@ -271,3 +271,51 @@ def report_send(body: SendReportRequest):
     else:
         raise HTTPException(400, f"Unknown report type '{body.type}'. Use daily, weekly, or monthly.")
     return {"sent": sent, "type": t}
+
+
+# ── Symbol management ─────────────────────────────────────────────────────────
+
+class SymbolRequest(BaseModel):
+    symbol: str
+
+
+@app.get("/symbols")
+def get_symbols():
+    guardian: RiskGuardian = _state["guardian"]
+    return guardian.get_symbol_lists()
+
+
+@app.post("/symbols/allow")
+def add_allowed_symbol(body: SymbolRequest):
+    guardian: RiskGuardian = _state["guardian"]
+    added = guardian.add_allowed_symbol(body.symbol.upper())
+    return {
+        "added": added,
+        "symbol": body.symbol.upper(),
+        "allowed_symbols": guardian.get_symbol_lists()["allowed"],
+    }
+
+
+@app.delete("/symbols/allow")
+def remove_allowed_symbol(body: SymbolRequest):
+    guardian: RiskGuardian = _state["guardian"]
+    removed = guardian.remove_allowed_symbol(body.symbol.upper())
+    if not removed:
+        raise HTTPException(404, f"{body.symbol.upper()} not found in allowed symbols list")
+    return {"removed": True, "symbol": body.symbol.upper()}
+
+
+@app.post("/symbols/block")
+def add_blocked_symbol(body: SymbolRequest):
+    guardian: RiskGuardian = _state["guardian"]
+    blocked = guardian.add_blocked_symbol(body.symbol.upper())
+    return {"blocked": blocked, "symbol": body.symbol.upper()}
+
+
+@app.delete("/symbols/block")
+def remove_blocked_symbol(body: SymbolRequest):
+    guardian: RiskGuardian = _state["guardian"]
+    removed = guardian.remove_blocked_symbol(body.symbol.upper())
+    if not removed:
+        raise HTTPException(404, f"{body.symbol.upper()} not found in blocked symbols list")
+    return {"unblocked": True, "symbol": body.symbol.upper()}
