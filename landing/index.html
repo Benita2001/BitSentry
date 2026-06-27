@@ -7,710 +7,643 @@
 <meta name="description" content="BitSentry wraps every trade decision with risk enforcement, audit logging, and market intelligence. Built for Bitget Agent Hub.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700;1,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg:       #0a0a0f;
-    --surface:  #0f172a;
-    --surface2: #141d2e;
-    --border:   #1e293b;
-    --green:    #22c55e;
-    --yellow:   #facc15;
-    --red:      #ef4444;
-    --blue:     #3b82f6;
-    --orange:   #f97316;
-    --purple:   #a855f7;
-    --text:     #f8fafc;
-    --muted:    #94a3b8;
-    --mono:     'JetBrains Mono', monospace;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  a { color: inherit; text-decoration: none; }
-
-  .container {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-
-  /* ── NAV ── */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(10,10,15,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .nav-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-    gap: 16px;
-  }
-
-  .nav-logo {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: var(--green);
-    letter-spacing: -0.02em;
-    white-space: nowrap;
-  }
-
-  .nav-logo span { color: var(--muted); font-weight: 400; }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .nav-link {
-    color: var(--muted);
-    font-size: 0.85rem;
-    font-weight: 500;
-    padding: 6px 12px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    transition: color 0.15s, border-color 0.15s;
-    white-space: nowrap;
-  }
-
-  .nav-link:hover { color: var(--text); border-color: #334155; }
-
-  .btn-copy-nav {
-    background: var(--green);
-    color: #000;
-    font-size: 0.8rem;
-    font-weight: 700;
-    padding: 6px 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-family: var(--mono);
-    white-space: nowrap;
-    transition: opacity 0.15s;
-  }
-
-  .btn-copy-nav:hover { opacity: 0.85; }
-
-  /* ── HERO ── */
-  .hero {
-    padding: 96px 0 72px;
-    text-align: center;
-  }
-
-  .hero h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.15;
-    margin-bottom: 20px;
-    color: var(--text);
-  }
-
-  .hero h1 em {
-    font-style: normal;
-    color: var(--green);
-  }
-
-  .hero-sub {
-    font-size: clamp(1rem, 2vw, 1.2rem);
-    color: var(--muted);
-    max-width: 640px;
-    margin: 0 auto 36px;
-    line-height: 1.65;
-  }
-
-  .hero-ctas {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
-  }
-
-  .btn-primary {
-    background: var(--green);
-    color: #000;
-    font-weight: 700;
-    padding: 12px 24px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-family: var(--mono);
-    font-size: 0.9rem;
-    transition: opacity 0.15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn-primary:hover { opacity: 0.87; }
-
-  .btn-outline {
-    background: transparent;
-    color: var(--text);
-    font-weight: 600;
-    padding: 12px 24px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: border-color 0.15s, background 0.15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn-outline:hover { border-color: #334155; background: var(--surface); }
-
-  .hero-badges {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 48px;
-  }
-
-  .badge {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 20px;
-    border: 1px solid;
-    letter-spacing: 0.02em;
-  }
-
-  .badge-green  { border-color: var(--green);  color: var(--green);  background: rgba(34,197,94,0.08); }
-  .badge-blue   { border-color: var(--blue);   color: var(--blue);   background: rgba(59,130,246,0.08); }
-  .badge-yellow { border-color: var(--yellow); color: var(--yellow); background: rgba(250,204,21,0.08); }
-  .badge-muted  { border-color: var(--border); color: var(--muted);  background: transparent; }
-
-  /* ── LIVE STATS BAR ── */
-  .stats-bar {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    max-width: 720px;
-    margin: 0 auto;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    padding: 18px 24px;
-    text-align: left;
-  }
-
-  .stat-label {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-  }
-
-  .stat-value {
-    font-size: 1.35rem;
-    font-weight: 700;
-    font-family: var(--mono);
-    color: var(--text);
-    line-height: 1;
-  }
-
-  .stat-sub {
-    font-size: 0.72rem;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  .pulse {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--green);
-    margin-right: 5px;
-    vertical-align: middle;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  /* ── SECTIONS ── */
-  section { padding: 80px 0; }
-  section + section { border-top: 1px solid var(--border); }
-
-  .section-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--green);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 12px;
-  }
-
-  .section-title {
-    font-size: clamp(1.6rem, 3vw, 2.4rem);
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    margin-bottom: 12px;
-    line-height: 1.2;
-  }
-
-  .section-sub {
-    color: var(--muted);
-    font-size: 1.05rem;
-    max-width: 560px;
-    margin-bottom: 52px;
-    line-height: 1.65;
-  }
-
-  /* ── PROBLEM ── */
-  .problem-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
-  }
-
-  .problem-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 28px;
-  }
-
-  .problem-icon {
-    font-size: 2rem;
-    margin-bottom: 14px;
-    display: block;
-  }
-
-  .problem-card h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--text);
-  }
-
-  .problem-card p {
-    font-size: 0.9rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  /* ── LAYERS ── */
-  .layers-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    position: relative;
-    max-width: 780px;
-  }
-
-  .layer-connector {
-    width: 2px;
-    height: 20px;
-    background: var(--border);
-    margin-left: 30px;
-  }
-
-  .layer-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 24px 28px;
-    display: grid;
-    grid-template-columns: 60px 1fr auto;
-    gap: 20px;
-    align-items: start;
-    border-left: 3px solid;
-  }
-
-  .layer-num {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-  }
-
-  .layer-body h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-
-  .layer-body p {
-    font-size: 0.875rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  .layer-badge {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 5px 10px;
-    border-radius: 5px;
-    white-space: nowrap;
-    border: 1px solid;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  /* ── MARKET INTEL ── */
-  .intel-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
-  }
-
-  .intel-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 28px;
-  }
-
-  .intel-card h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .intel-card p {
-    font-size: 0.875rem;
-    color: var(--muted);
-    line-height: 1.65;
-    margin-bottom: 16px;
-  }
-
-  .intel-live {
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    color: var(--muted);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 12px;
-  }
-
-  .intel-live strong {
-    color: var(--green);
-    font-weight: 600;
-  }
-
-  /* ── INSTALLATION ── */
-  .steps { display: flex; flex-direction: column; gap: 24px; max-width: 760px; }
-
-  .step {
-    display: grid;
-    grid-template-columns: 40px 1fr;
-    gap: 20px;
-    align-items: start;
-  }
-
-  .step-num {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 0.95rem;
-    color: var(--green);
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .step-content h3 {
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-
-  .code-block {
-    position: relative;
-    background: #060910;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .code-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 14px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .code-lang {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .btn-copy {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
-    font-family: inherit;
-  }
-
-  .btn-copy:hover { color: var(--text); border-color: #334155; }
-  .btn-copy.copied { color: var(--green); border-color: var(--green); }
-
-  pre {
-    padding: 16px;
-    overflow-x: auto;
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    line-height: 1.7;
-    color: #cbd5e1;
-  }
-
-  pre .kw  { color: #7dd3fc; }
-  pre .str { color: #86efac; }
-  pre .cm  { color: #475569; }
-  pre .key { color: #facc15; }
-
-  /* ── DEMO VIDEO ── */
-  .demo-placeholder {
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    padding: 80px 40px;
-    text-align: center;
-    max-width: 720px;
-  }
-
-  .play-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 1.5rem;
-  }
-
-  .demo-placeholder h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-
-  .demo-placeholder p {
-    font-size: 0.875rem;
-    color: #475569;
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 36px 0;
-  }
-
-  .footer-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    text-align: center;
-  }
-
-  .footer-copy {
-    font-size: 0.82rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .footer-link {
-    font-size: 0.82rem;
-    color: var(--muted);
-    font-weight: 500;
-    transition: color 0.15s;
-  }
-
-  .footer-link:hover { color: var(--green); }
-
-  .footer-built {
-    font-size: 0.78rem;
-    color: #475569;
-  }
-
-  /* ── TOAST ── */
-  #toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--surface);
-    border: 1px solid var(--green);
-    color: var(--green);
-    font-size: 0.82rem;
-    font-weight: 600;
-    padding: 10px 18px;
-    border-radius: 8px;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.2s, transform 0.2s;
-    pointer-events: none;
-    z-index: 999;
-    font-family: var(--mono);
-  }
-
-  #toast.show { opacity: 1; transform: translateY(0); }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 640px) {
-    .stats-bar { grid-template-columns: 1fr; }
-    .layer-card { grid-template-columns: 44px 1fr; }
-    .layer-badge { grid-column: 2; }
-    .nav-links { gap: 6px; }
-    .nav-link { display: none; }
-    section { padding: 56px 0; }
-  }
-
-  @media (max-width: 480px) {
-    .hero { padding: 64px 0 56px; }
-    .step { grid-template-columns: 32px 1fr; gap: 14px; }
-    .step-num { width: 32px; height: 32px; font-size: 0.8rem; }
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:     #050505;
+  --green:  #22c55e;
+  --text:   #f8fafc;
+  --muted:  #6b7280;
+  --dim:    #374151;
+  --border: #161616;
+  --surface:#0c0c0c;
+  --mono:   'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+.container { max-width: 1160px; margin: 0 auto; padding: 0 32px; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ NAV ━━━━━━━━━━━━━━━━━━━━━━━━ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 18px 0;
+}
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 800; font-size: 1rem; letter-spacing: -0.01em;
+}
+.logo-star {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--green); color: #000;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; font-weight: 900; flex-shrink: 0;
+}
+.nav-center {
+  display: flex; align-items: center; gap: 2px;
+}
+.nav-link {
+  padding: 8px 15px; border-radius: 6px;
+  font-size: 0.855rem; font-weight: 500; color: var(--muted);
+  transition: color 0.15s;
+  display: flex; align-items: center; gap: 7px;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--text); }
+.nav-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green); flex-shrink: 0;
+}
+.nav-cta {
+  background: var(--green); color: #000;
+  padding: 9px 22px; border-radius: 50px;
+  font-weight: 700; font-size: 0.855rem;
+  border: none; cursor: pointer;
+  transition: opacity 0.15s; white-space: nowrap;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ HERO ━━━━━━━━━━━━━━━━━━━━━━━━ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 85% 50% at 50% 108%, rgba(34,197,94,0.28) 0%, transparent 62%),
+    radial-gradient(ellipse 45% 35% at 10% 110%, rgba(34,197,94,0.10) 0%, transparent 52%),
+    radial-gradient(ellipse 45% 35% at 90% 110%, rgba(34,197,94,0.10) 0%, transparent 52%),
+    #050505;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px);
+  background-size: 42px 42px;
+  pointer-events: none; z-index: 0;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 1px; background: #111; z-index: 1;
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  padding-top: 140px;
+  padding-bottom: 210px;
+  width: 100%;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 0.82rem; color: var(--muted);
+  margin-bottom: 26px;
+  letter-spacing: 0.01em;
+}
+.eyebrow-sep { color: #2a2a2a; }
+
+.hero-title {
+  font-size: clamp(3.2rem, 8.5vw, 8rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 22px;
+}
+.hero-title .green-word {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 800;
+  color: var(--green);
+  display: block;
+  line-height: 1.05;
+}
+.hero-title .arrow-icon {
+  font-style: normal;
+  font-family: 'Inter', sans-serif;
+  color: var(--green);
+  font-weight: 900;
+}
+
+.hero-sub {
+  color: var(--muted); font-size: 0.975rem;
+  max-width: 440px; margin: 0 auto 40px;
+  line-height: 1.7;
+}
+
+/* Terminal card */
+.terminal {
+  display: inline-block;
+  background: #070d07;
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 14px;
+  width: 360px;
+  text-align: left;
+  box-shadow: 0 0 50px rgba(34,197,94,0.07), 0 24px 64px rgba(0,0,0,0.7);
+  transform: perspective(900px) rotateY(-4deg) rotateX(3deg);
+  transition: transform 0.4s ease;
+  overflow: hidden;
+  margin: 0 auto;
+}
+.terminal:hover {
+  transform: perspective(900px) rotateY(0deg) rotateX(0deg);
+}
+.t-bar {
+  background: #0c130c;
+  border-bottom: 1px solid rgba(34,197,94,0.12);
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 6px;
+}
+.t-dot { width: 10px; height: 10px; border-radius: 50%; }
+.t-label {
+  margin-left: auto; font-family: var(--mono);
+  font-size: 0.68rem; color: #2d4a2d;
+}
+.t-body {
+  padding: 15px 16px;
+  font-family: var(--mono); font-size: 0.77rem; line-height: 1.85;
+}
+.tc-prompt { color: var(--green); }
+.tc-cmd    { color: #e2e8f0; }
+.tc-rule   { color: #1e2d1e; }
+.tc-ok     { color: var(--green); }
+.tc-key    { color: #7dd3fc; }
+.tc-val    { color: #e2e8f0; }
+.tc-vg     { color: var(--green); font-weight: 600; }
+.tc-vy     { color: #facc15; }
+.tc-dim    { color: #1e3a1e; }
+
+/* Live stats strip */
+.stats-strip {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; background: #111;
+  border: 1px solid #111; border-radius: 10px;
+  max-width: 640px; margin: 28px auto 0;
+  overflow: hidden;
+}
+.ss-cell { background: #080808; padding: 16px 22px; text-align: left; }
+.ss-label {
+  font-size: 0.66rem; font-weight: 700; color: var(--dim);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 7px; display: flex; align-items: center; gap: 6px;
+}
+.ss-val {
+  font-size: 1.2rem; font-weight: 700;
+  font-family: var(--mono); color: var(--text);
+}
+.ss-sub { font-size: 0.68rem; color: var(--dim); margin-top: 3px; }
+.pulse {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green); flex-shrink: 0;
+  animation: blink 2s ease infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ MARQUEE ━━━━━━━━━━━━━━━━━━━━━━━━ */
+.marquee-wrap {
+  position: absolute;
+  bottom: 16%;
+  left: -15%; right: -15%;
+  transform: rotate(-5.8deg);
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 26s linear infinite;
+}
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-ribbon {
+  display: flex; align-items: center;
+  white-space: nowrap;
+  background: var(--green);
+  padding: 13px 0;
+}
+.m-item {
+  font-size: 0.88rem; font-weight: 800;
+  color: #000; padding: 0 18px;
+  letter-spacing: 0.01em;
+}
+.m-dot {
+  color: rgba(0,0,0,0.35);
+  font-size: 0.55rem;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ CIRCULAR BADGE ━━━━━━━━━━━━━━━━━━━━━━━━ */
+.badge-wrap {
+  position: absolute;
+  bottom: 8%;
+  right: 12%;
+  z-index: 4;
+  width: 124px; height: 124px;
+  display: flex; align-items: center; justify-content: center;
+}
+.badge-ring {
+  position: absolute; inset: 0;
+  animation: spin 13s linear infinite;
+}
+.badge-ring svg { width: 124px; height: 124px; }
+.badge-btn {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--text); color: #000;
+  border: none; cursor: pointer;
+  font-size: 1.1rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  animation: unspin 13s linear infinite;
+  transition: background 0.2s;
+}
+.badge-btn:hover { background: var(--green); }
+@keyframes spin   { to { transform: rotate(360deg); } }
+@keyframes unspin { to { transform: translate(-50%,-50%) rotate(-360deg); } }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ SCROLL HINT ━━━━━━━━━━━━━━━━━━━━━━━━ */
+.scroll-hint {
+  position: absolute; bottom: 22px; left: 50%;
+  transform: translateX(-50%); z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  font-size: 0.65rem; font-weight: 700; color: #1f2937;
+  text-transform: uppercase; letter-spacing: 0.12em;
+}
+.scroll-line {
+  width: 1px; height: 30px;
+  background: linear-gradient(var(--green), transparent);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ SECTIONS ━━━━━━━━━━━━━━━━━━━━━━━━ */
+section.content { padding: 100px 0; border-top: 1px solid #0f0f0f; }
+
+.eyebrow {
+  font-size: 0.7rem; font-weight: 700; color: var(--green);
+  text-transform: uppercase; letter-spacing: 0.14em;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content:''; width: 22px; height: 1px; background: var(--green); }
+
+.sec-title {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800; letter-spacing: -0.025em; line-height: 1.1;
+  margin-bottom: 12px;
+}
+.sec-sub {
+  color: var(--muted); font-size: 0.975rem;
+  max-width: 480px; line-height: 1.75; margin-bottom: 56px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ PROBLEM ━━━━━━━━━━━━━━━━━━━━━━━━ */
+.problem-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+  gap: 1px; background: #111;
+  border: 1px solid #111; border-radius: 12px; overflow: hidden;
+}
+.prob-card { background: #080808; padding: 40px 32px; }
+.prob-num {
+  font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+  color: var(--green); letter-spacing: 0.1em; margin-bottom: 18px;
+}
+.prob-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: #0f0f0f; border: 1px solid #1a1a1a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; margin-bottom: 18px;
+}
+.prob-card h3 { font-size: 1.02rem; font-weight: 700; margin-bottom: 10px; }
+.prob-card p  { font-size: 0.868rem; color: var(--muted); line-height: 1.72; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ LAYERS ━━━━━━━━━━━━━━━━━━━━━━━━ */
+.layers { display: flex; flex-direction: column; max-width: 800px; }
+.lyr-conn { width: 1px; height: 22px; background: #161616; margin-left: 27px; }
+.lyr-card {
+  background: #080808; border: 1px solid #131313;
+  border-radius: 12px; padding: 24px 28px;
+  display: grid; grid-template-columns: 54px 1fr;
+  gap: 20px; align-items: start;
+  border-left: 2px solid;
+  transition: background 0.2s;
+}
+.lyr-card:hover { background: #0d0d0d; }
+.lyr-num {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.88rem;
+  border: 1px solid; flex-shrink: 0;
+}
+.lyr-body h3 {
+  font-size: 0.975rem; font-weight: 700;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.lyr-body p { font-size: 0.855rem; color: var(--muted); line-height: 1.72; }
+.lyr-badge {
+  font-family: var(--mono); font-size: 0.68rem; font-weight: 600;
+  padding: 3px 9px; border-radius: 4px; border: 1px solid;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ MARKET INTEL ━━━━━━━━━━━━━━━━━━━━━━━━ */
+.intel-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+  gap: 16px;
+}
+.intel-card {
+  background: #080808; border: 1px solid #131313;
+  border-radius: 12px; padding: 32px;
+}
+.intel-card .icon { font-size: 1.6rem; margin-bottom: 14px; }
+.intel-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+.intel-card p  { font-size: 0.855rem; color: var(--muted); line-height: 1.72; margin-bottom: 16px; }
+.intel-tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--mono); font-size: 0.7rem; color: var(--green);
+  background: rgba(34,197,94,0.06);
+  border: 1px solid rgba(34,197,94,0.18);
+  border-radius: 5px; padding: 5px 10px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ INSTALL ━━━━━━━━━━━━━━━━━━━━━━━━ */
+.steps { display: flex; flex-direction: column; gap: 22px; max-width: 740px; }
+.step  { display: grid; grid-template-columns: 40px 1fr; gap: 16px; align-items: start; }
+.step-n {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: #080808; border: 1px solid #1c1c1c;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.82rem; color: var(--green); flex-shrink: 0;
+  margin-top: 2px;
+}
+.step h3 { font-size: 0.935rem; font-weight: 700; margin-bottom: 10px; }
+.code-block {
+  position: relative; background: #040404;
+  border: 1px solid #141414; border-radius: 10px; overflow: hidden;
+}
+.code-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 13px; background: #080808; border-bottom: 1px solid #141414;
+}
+.code-lang { font-size: 0.65rem; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; }
+.btn-copy {
+  background: transparent; border: 1px solid #1c1c1c; color: #374151;
+  font-size: 0.68rem; font-weight: 600; padding: 2px 9px; border-radius: 4px;
+  cursor: pointer; font-family: inherit; transition: color 0.15s, border-color 0.15s;
+}
+.btn-copy:hover { color: var(--text); border-color: #374151; }
+.btn-copy.copied { color: var(--green); border-color: var(--green); }
+pre {
+  padding: 15px 16px; overflow-x: auto;
+  font-family: var(--mono); font-size: 0.79rem; line-height: 1.78; color: #9ca3af;
+}
+pre .kw  { color: #7dd3fc; }
+pre .str { color: #86efac; }
+pre .key { color: #facc15; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ DEMO ━━━━━━━━━━━━━━━━━━━━━━━━ */
+.demo-box {
+  border: 1px dashed #1c1c1c; border-radius: 16px; padding: 100px 40px;
+  text-align: center; max-width: 760px;
+}
+.play-btn {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: #0c0c0c; border: 1px solid #1c1c1c;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; margin: 0 auto 20px; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.play-btn:hover { background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.3); }
+.demo-box h3 { font-size: 1.05rem; font-weight: 600; color: #374151; margin-bottom: 8px; }
+.demo-box p  { font-size: 0.855rem; color: #1f2937; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ FOOTER ━━━━━━━━━━━━━━━━━━━━━━━━ */
+footer { border-top: 1px solid #0f0f0f; padding: 40px 0; }
+.footer-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+.footer-copy  { font-size: 0.8rem; color: #374151; line-height: 1.7; }
+.footer-links { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; }
+.footer-link  { font-size: 0.8rem; color: #374151; font-weight: 500; transition: color 0.15s; }
+.footer-link:hover { color: var(--green); }
+.footer-by    { font-size: 0.72rem; color: #1a1a1a; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ TOAST ━━━━━━━━━━━━━━━━━━━━━━━━ */
+#toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: #0c0c0c; border: 1px solid var(--green); color: var(--green);
+  font-size: 0.78rem; font-weight: 600; padding: 9px 16px; border-radius: 7px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none; z-index: 999; font-family: var(--mono);
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━ RESPONSIVE ━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 768px) {
+  .nav-center { display: none; }
+  .hero-content { padding-bottom: 220px; }
+  .terminal { width: 290px; transform: none; }
+  .terminal:hover { transform: none; }
+  .badge-wrap { right: 6%; bottom: 7%; width: 104px; height: 104px; }
+  .badge-ring svg { width: 104px; height: 104px; }
+  .stats-strip { grid-template-columns: 1fr; }
+  section.content { padding: 64px 0; }
+  .container { padding: 0 20px; }
+}
+@media (max-width: 480px) {
+  .hero-title { font-size: clamp(2.6rem, 12vw, 4.5rem); }
+  .badge-wrap { display: none; }
+  .hero-content { padding-bottom: 160px; }
+  .step { grid-template-columns: 36px 1fr; }
+  .step-n { width: 36px; height: 36px; font-size: 0.75rem; }
+}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════ NAV ══════════════════════════ -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━ NAV ━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <nav>
   <div class="container">
     <div class="nav-inner">
-      <div class="nav-logo">BitSentry <span>v0.2.0</span></div>
-      <div class="nav-links">
-        <a href="https://github.com/Benita2001/BitSentry" target="_blank" rel="noopener" class="nav-link">GitHub</a>
-        <a href="https://pypi.org/project/bitsentry/" target="_blank" rel="noopener" class="nav-link">PyPI</a>
-        <button class="btn-copy-nav" onclick="copy('pip install bitsentry', this)">pip install bitsentry</button>
+      <div class="nav-logo">
+        <div class="logo-star">✦</div>
+        BitSentry
       </div>
+      <div class="nav-center">
+        <a href="#home"    class="nav-link active"><span class="nav-dot"></span> Home</a>
+        <a href="#problem" class="nav-link">Problem</a>
+        <a href="#layers"  class="nav-link">5 Layers</a>
+        <a href="#install" class="nav-link">Install</a>
+        <a href="https://github.com/Benita2001/BitSentry" target="_blank" rel="noopener" class="nav-link">Docs</a>
+      </div>
+      <button class="nav-cta" onclick="copyText('pip install bitsentry')">Get Started →</button>
     </div>
   </div>
 </nav>
 
-<!-- ══════════════════════════ HERO ══════════════════════════ -->
-<section class="hero">
-  <div class="container">
-    <h1>Safety Layer for<br><em>Bitget Trading Agents</em></h1>
-    <p class="hero-sub">BitSentry wraps every trade decision with risk enforcement, audit logging, and market intelligence. Built for Bitget Agent Hub.</p>
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━ HERO ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="home" class="hero">
 
-    <div class="hero-ctas">
-      <button class="btn-primary" onclick="copy('pip install bitsentry', this)">
-        <span>$</span> pip install bitsentry
-      </button>
-      <a href="https://github.com/Benita2001/BitSentry" target="_blank" rel="noopener" class="btn-outline">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-        View on GitHub
-      </a>
-    </div>
+  <div class="hero-content">
+    <div class="container">
 
-    <div class="hero-badges">
-      <span class="badge badge-green">PyPI v0.2.0</span>
-      <span class="badge badge-blue">MCP Ready</span>
-      <span class="badge badge-yellow">Bitget Agent Hub Compatible</span>
-    </div>
+      <p class="hero-eyebrow">
+        BitSentry v0.2.0
+        <span class="eyebrow-sep">|</span>
+        Built for Bitget Agent Hub
+      </p>
 
-    <div class="stats-bar">
-      <div class="stat-card">
-        <div class="stat-label"><span class="pulse"></span>BTC Price</div>
-        <div class="stat-value" id="btc-price">Loading…</div>
-        <div class="stat-sub" id="btc-change">via Bitget API</div>
+      <h1 class="hero-title">
+        <span class="green-word">BitSentry</span>
+        Safety Layer
+        <br>for Agents<span class="arrow-icon"> ↗</span>
+      </h1>
+
+      <p class="hero-sub">
+        Wraps every trade decision with risk enforcement, audit logging,
+        and live market intelligence. Your agent never trades blind again.
+      </p>
+
+      <!-- Floating terminal card -->
+      <div class="terminal">
+        <div class="t-bar">
+          <div class="t-dot" style="background:#ef4444"></div>
+          <div class="t-dot" style="background:#facc15"></div>
+          <div class="t-dot" style="background:#22c55e"></div>
+          <span class="t-label">bitsentry — risk check</span>
+        </div>
+        <div class="t-body">
+          <div><span class="tc-prompt">$ </span><span class="tc-cmd">bitsentry check BTCUSDT --size 100</span></div>
+          <div class="tc-rule">───────────────────────────────</div>
+          <div><span class="tc-ok">✓ </span><span class="tc-key">approved     </span><span class="tc-vg">true</span></div>
+          <div><span class="tc-ok">→ </span><span class="tc-key">instruction  </span><span class="tc-vg">PROCEED</span></div>
+          <div><span class="tc-ok">↯ </span><span class="tc-key">risk_score   </span><span class="tc-val">15 / 100</span></div>
+          <div><span class="tc-ok">  </span><span class="tc-key">fear_greed   </span><span class="tc-vy" id="card-fg">15 · Extreme Fear</span></div>
+          <div><span class="tc-ok">  </span><span class="tc-key">leverage     </span><span class="tc-val">≤ 10x cap</span></div>
+          <div><span class="tc-ok">🔒 </span><span class="tc-key">hash         </span><span class="tc-dim">d095c706…</span></div>
+          <div class="tc-rule">───────────────────────────────</div>
+          <div><span class="tc-vg">✓ </span><span class="tc-val">Audit logged · SHA-256 verified</span></div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label"><span class="pulse"></span>Fear &amp; Greed</div>
-        <div class="stat-value" id="fg-value">Loading…</div>
-        <div class="stat-sub" id="fg-label">via alternative.me</div>
+
+      <!-- Live stats strip -->
+      <div class="stats-strip">
+        <div class="ss-cell">
+          <div class="ss-label"><span class="pulse"></span> BTC Price</div>
+          <div class="ss-val" id="btc-price">Loading…</div>
+          <div class="ss-sub" id="btc-change">via Bitget API</div>
+        </div>
+        <div class="ss-cell">
+          <div class="ss-label"><span class="pulse"></span> Fear &amp; Greed</div>
+          <div class="ss-val" id="fg-value">Loading…</div>
+          <div class="ss-sub" id="fg-label">via alternative.me</div>
+        </div>
+        <div class="ss-cell">
+          <div class="ss-label">Market Status</div>
+          <div class="ss-val" id="mkt-status" style="font-size:0.88rem;font-family:Inter,sans-serif;font-weight:700;">—</div>
+          <div class="ss-sub" id="mkt-sub">BitSentry assessment</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Market Status</div>
-        <div class="stat-value" id="mkt-status" style="font-size:1rem;font-family:inherit;font-weight:700;">—</div>
-        <div class="stat-sub" id="mkt-action">BitSentry assessment</div>
+
+    </div>
+  </div>
+
+  <!-- Diagonal scrolling ribbon -->
+  <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee-track">
+      <div class="marquee-ribbon">
+        <span class="m-item">RiskGuardian</span><span class="m-dot">✦</span>
+        <span class="m-item">AuditEngine</span><span class="m-dot">✦</span>
+        <span class="m-item">PositionMonitor</span><span class="m-dot">✦</span>
+        <span class="m-item">StrategyEvaluator</span><span class="m-dot">✦</span>
+        <span class="m-item">ReportGenerator</span><span class="m-dot">✦</span>
+        <span class="m-item">pip install bitsentry</span><span class="m-dot">✦</span>
+        <span class="m-item">RiskGuardian</span><span class="m-dot">✦</span>
+        <span class="m-item">AuditEngine</span><span class="m-dot">✦</span>
+        <span class="m-item">PositionMonitor</span><span class="m-dot">✦</span>
+        <span class="m-item">StrategyEvaluator</span><span class="m-dot">✦</span>
+        <span class="m-item">ReportGenerator</span><span class="m-dot">✦</span>
+        <span class="m-item">pip install bitsentry</span><span class="m-dot">✦</span>
+      </div>
+      <div class="marquee-ribbon">
+        <span class="m-item">RiskGuardian</span><span class="m-dot">✦</span>
+        <span class="m-item">AuditEngine</span><span class="m-dot">✦</span>
+        <span class="m-item">PositionMonitor</span><span class="m-dot">✦</span>
+        <span class="m-item">StrategyEvaluator</span><span class="m-dot">✦</span>
+        <span class="m-item">ReportGenerator</span><span class="m-dot">✦</span>
+        <span class="m-item">pip install bitsentry</span><span class="m-dot">✦</span>
+        <span class="m-item">RiskGuardian</span><span class="m-dot">✦</span>
+        <span class="m-item">AuditEngine</span><span class="m-dot">✦</span>
+        <span class="m-item">PositionMonitor</span><span class="m-dot">✦</span>
+        <span class="m-item">StrategyEvaluator</span><span class="m-dot">✦</span>
+        <span class="m-item">ReportGenerator</span><span class="m-dot">✦</span>
+        <span class="m-item">pip install bitsentry</span><span class="m-dot">✦</span>
       </div>
     </div>
   </div>
+
+  <!-- Rotating circular badge -->
+  <div class="badge-wrap" aria-hidden="true">
+    <div class="badge-ring">
+      <svg viewBox="0 0 124 124">
+        <defs>
+          <path id="cp" d="M62,62 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/>
+        </defs>
+        <text fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="700" letter-spacing="2.8">
+          <textPath href="#cp">5 LAYERS · MCP READY · AUDIT TRAIL · BITGET · </textPath>
+        </text>
+      </svg>
+    </div>
+    <button class="badge-btn" onclick="document.getElementById('problem').scrollIntoView({behavior:'smooth'})">↓</button>
+  </div>
+
+  <!-- Scroll hint -->
+  <div class="scroll-hint" aria-hidden="true">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+
 </section>
 
-<!-- ══════════════════════════ PROBLEM ══════════════════════════ -->
-<section>
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━ PROBLEM ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="problem" class="content">
   <div class="container">
-    <div class="section-label">The Problem</div>
-    <h2 class="section-title">Trading Agents Are Flying Blind</h2>
-    <p class="section-sub">Most trading agents connect directly to exchanges with no safety layer between intention and execution.</p>
-
+    <div class="eyebrow">The Problem</div>
+    <h2 class="sec-title">Trading Agents Are Flying Blind</h2>
+    <p class="sec-sub">Most agents connect directly to exchanges with no safety layer between intention and execution.</p>
     <div class="problem-grid">
-      <div class="problem-card">
-        <span class="problem-icon">⚠️</span>
+      <div class="prob-card">
+        <div class="prob-num">01</div>
+        <div class="prob-icon">⚠️</div>
         <h3>Black Box Agents</h3>
         <p>When your agent loses money, you don't know why. No decision trail. No accountability. Just a smaller balance.</p>
       </div>
-      <div class="problem-card">
-        <span class="problem-icon">💥</span>
+      <div class="prob-card">
+        <div class="prob-num">02</div>
+        <div class="prob-icon">💥</div>
         <h3>No Risk Controls</h3>
         <p>Agents trade without leverage caps, position limits, or loss circuit breakers. One bad trade wipes the account.</p>
       </div>
-      <div class="problem-card">
-        <span class="problem-icon">📉</span>
+      <div class="prob-card">
+        <div class="prob-num">03</div>
+        <div class="prob-icon">📉</div>
         <h3>Dead Strategies</h3>
         <p>Strategies degrade silently. Your agent keeps running a broken strategy while you watch the losses mount.</p>
       </div>
@@ -718,137 +651,120 @@
   </div>
 </section>
 
-<!-- ══════════════════════════ SOLUTION — 5 LAYERS ══════════════════════════ -->
-<section>
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 5 LAYERS ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="layers" class="content">
   <div class="container">
-    <div class="section-label">The Solution</div>
-    <h2 class="section-title">5 Layers of Protection</h2>
-    <p class="section-sub">Every trade passes through all 5 layers before touching Bitget.</p>
+    <div class="eyebrow">The Solution</div>
+    <h2 class="sec-title">5 Layers of Protection</h2>
+    <p class="sec-sub">Every trade passes through all 5 layers before touching Bitget.</p>
+    <div class="layers">
 
-    <div class="layers-stack">
-
-      <div class="layer-card" style="border-left-color:#22c55e;">
-        <div class="layer-num" style="background:rgba(34,197,94,0.1);color:#22c55e;">1</div>
-        <div class="layer-body">
-          <h3>Risk Guardian</h3>
-          <p>5-layer pre-trade check. Leverage cap, position size limit, daily loss circuit breaker, consecutive loss throttle, and market condition filter with live Fear &amp; Greed and volatility data.</p>
+      <div class="lyr-card" style="border-left-color:#22c55e">
+        <div class="lyr-num" style="background:rgba(34,197,94,0.07);color:#22c55e;border-color:rgba(34,197,94,0.18)">01</div>
+        <div class="lyr-body">
+          <h3>Risk Guardian <span class="lyr-badge" style="border-color:rgba(34,197,94,0.28);color:#22c55e;background:rgba(34,197,94,0.06)">PROCEED / BLOCKED</span></h3>
+          <p>5-layer pre-trade check. Leverage cap, position size limit, daily loss circuit breaker, consecutive loss throttle, and live market condition filter.</p>
         </div>
-        <span class="layer-badge" style="border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,0.07);">PROCEED / REDUCE_SIZE / WAIT / BLOCKED</span>
       </div>
 
-      <div class="layer-connector"></div>
+      <div class="lyr-conn"></div>
 
-      <div class="layer-card" style="border-left-color:#3b82f6;">
-        <div class="layer-num" style="background:rgba(59,130,246,0.1);color:#3b82f6;">2</div>
-        <div class="layer-body">
-          <h3>Audit Engine</h3>
-          <p>Every decision logged to SQLite with SHA-256 integrity verification. Tamper-proof. Reproducible. Judges and auditors can verify the full decision trail independently.</p>
+      <div class="lyr-card" style="border-left-color:#3b82f6">
+        <div class="lyr-num" style="background:rgba(59,130,246,0.07);color:#3b82f6;border-color:rgba(59,130,246,0.18)">02</div>
+        <div class="lyr-body">
+          <h3>Audit Engine <span class="lyr-badge" style="border-color:rgba(59,130,246,0.28);color:#3b82f6;background:rgba(59,130,246,0.06)">SHA-256 hash</span></h3>
+          <p>Every decision logged to SQLite with SHA-256 integrity verification. Tamper-proof. Reproducible. Judges can verify independently.</p>
         </div>
-        <span class="layer-badge" style="border-color:#3b82f6;color:#3b82f6;background:rgba(59,130,246,0.07);">integrity_hash: SHA-256</span>
       </div>
 
-      <div class="layer-connector"></div>
+      <div class="lyr-conn"></div>
 
-      <div class="layer-card" style="border-left-color:#facc15;">
-        <div class="layer-num" style="background:rgba(250,204,21,0.1);color:#facc15;">3</div>
-        <div class="layer-body">
-          <h3>Position Monitor</h3>
-          <p>Real-time safety ratings for every open Bitget position based on margin distance and unrealized PnL percentage. Blocks new entries when existing positions are already stressed.</p>
+      <div class="lyr-card" style="border-left-color:#facc15">
+        <div class="lyr-num" style="background:rgba(250,204,21,0.07);color:#facc15;border-color:rgba(250,204,21,0.18)">03</div>
+        <div class="lyr-body">
+          <h3>Position Monitor <span class="lyr-badge" style="border-color:rgba(250,204,21,0.28);color:#facc15;background:rgba(250,204,21,0.06)">GREEN / YELLOW / RED</span></h3>
+          <p>Real-time safety ratings for every open Bitget position based on margin distance and unrealized PnL percentage.</p>
         </div>
-        <span class="layer-badge" style="border-color:#facc15;color:#facc15;background:rgba(250,204,21,0.07);">GREEN / YELLOW / RED</span>
       </div>
 
-      <div class="layer-connector"></div>
+      <div class="lyr-conn"></div>
 
-      <div class="layer-card" style="border-left-color:#f97316;">
-        <div class="layer-num" style="background:rgba(249,115,22,0.1);color:#f97316;">4</div>
-        <div class="layer-body">
-          <h3>Strategy Evaluator</h3>
-          <p>Rolling win rate over 7d and 30d windows with profit factor scoring. Detects when strategies degrade before they destroy accounts. Stops the agent before it's too late.</p>
+      <div class="lyr-card" style="border-left-color:#f97316">
+        <div class="lyr-num" style="background:rgba(249,115,22,0.07);color:#f97316;border-color:rgba(249,115,22,0.18)">04</div>
+        <div class="lyr-body">
+          <h3>Strategy Evaluator <span class="lyr-badge" style="border-color:rgba(249,115,22,0.28);color:#f97316;background:rgba(249,115,22,0.06)">PERFORMING / DEAD</span></h3>
+          <p>Rolling win rate over 7d and 30d windows. Detects strategy degradation before it destroys accounts.</p>
         </div>
-        <span class="layer-badge" style="border-color:#f97316;color:#f97316;background:rgba(249,115,22,0.07);">PERFORMING / DEGRADING / DEAD</span>
       </div>
 
-      <div class="layer-connector"></div>
+      <div class="lyr-conn"></div>
 
-      <div class="layer-card" style="border-left-color:#a855f7;">
-        <div class="layer-num" style="background:rgba(168,85,247,0.1);color:#a855f7;">5</div>
-        <div class="layer-body">
-          <h3>Report Generator</h3>
-          <p>Daily, weekly, and monthly trading summaries sent automatically to Telegram. Your agent reports to you, not the other way around. Includes SHA-256 verified audit integrity status.</p>
+      <div class="lyr-card" style="border-left-color:#a855f7">
+        <div class="lyr-num" style="background:rgba(168,85,247,0.07);color:#a855f7;border-color:rgba(168,85,247,0.18)">05</div>
+        <div class="lyr-body">
+          <h3>Report Generator <span class="lyr-badge" style="border-color:rgba(168,85,247,0.28);color:#a855f7;background:rgba(168,85,247,0.06)">Telegram daily</span></h3>
+          <p>Daily, weekly, and monthly summaries sent to Telegram automatically. Your agent reports to you, not the other way around.</p>
         </div>
-        <span class="layer-badge" style="border-color:#a855f7;color:#a855f7;background:rgba(168,85,247,0.07);">Telegram: Daily 23:00 UTC</span>
       </div>
 
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════ MARKET INTELLIGENCE ══════════════════════════ -->
-<section>
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━ MARKET INTEL ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="market" class="content">
   <div class="container">
-    <div class="section-label">Market Intelligence</div>
-    <h2 class="section-title">Market-Aware Risk</h2>
-    <p class="section-sub">BitSentry reads live market conditions before approving every trade.</p>
-
+    <div class="eyebrow">Market Intelligence</div>
+    <h2 class="sec-title">Market-Aware Risk</h2>
+    <p class="sec-sub">BitSentry reads live market conditions before approving every trade.</p>
     <div class="intel-grid">
       <div class="intel-card">
+        <div class="icon">😨</div>
         <h3>Fear &amp; Greed Index</h3>
-        <p>When Fear &amp; Greed hits Extreme Greed (&gt;75), BitSentry reduces long position sizes by 50%. When Extreme Fear (&lt;25), short sizes are reduced to protect against counter-trend capitulation.</p>
-        <div class="intel-live">
-          Live index: <strong id="intel-fg">Loading…</strong>
-        </div>
+        <p>Extreme Greed (&gt;75) reduces long position sizes 50%. Extreme Fear (&lt;25) reduces short sizes. Prevents buying tops and selling bottoms.</p>
+        <div class="intel-tag"><span class="pulse"></span>&nbsp;Live:&nbsp;<strong id="intel-fg">—</strong></div>
       </div>
       <div class="intel-card">
+        <div class="icon">⚡</div>
         <h3>Funding Rate</h3>
-        <p>High positive funding means longs are paying heavily. BitSentry flags this as a warning so agents avoid expensive carry costs and consider timing their entry more carefully.</p>
-        <div class="intel-live">
-          Source: <strong>Bitget futures API via bgc</strong>
-        </div>
+        <p>High positive funding means longs are paying heavily. BitSentry flags this so agents avoid expensive carry costs and poor timing.</p>
+        <div class="intel-tag">Source: Bitget futures via bgc</div>
       </div>
       <div class="intel-card">
+        <div class="icon">📊</div>
         <h3>Volatility Filter</h3>
-        <p>When 24h volatility exceeds 4%, BitSentry caps leverage recommendations to 5x to protect against liquidation in fast-moving and choppy market conditions.</p>
-        <div class="intel-live">
-          Calculated from: <strong>live Bitget OHLCV data</strong>
-        </div>
+        <p>When 24h volatility exceeds 4%, leverage is capped at 5x to protect against liquidation in fast-moving markets.</p>
+        <div class="intel-tag">Calculated from live OHLCV data</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════ INSTALLATION ══════════════════════════ -->
-<section>
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━ INSTALL ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="install" class="content">
   <div class="container">
-    <div class="section-label">Installation</div>
-    <h2 class="section-title">Get Started in 4 Steps</h2>
-    <p class="section-sub">BitSentry works alongside Bitget Agent Hub with zero conflict.</p>
-
+    <div class="eyebrow">Installation</div>
+    <h2 class="sec-title">Get Started in 4 Steps</h2>
+    <p class="sec-sub">BitSentry works alongside Bitget Agent Hub with zero conflict.</p>
     <div class="steps">
 
       <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-content">
+        <div class="step-n">1</div>
+        <div>
           <h3>Install Bitget Agent Hub</h3>
           <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">bash</span>
-              <button class="btn-copy" onclick="copyBlock(this)">Copy</button>
-            </div>
+            <div class="code-hdr"><span class="code-lang">bash</span><button class="btn-copy" onclick="copyBlock(this)">Copy</button></div>
             <pre>npx bitget-hub upgrade-all --target claude</pre>
           </div>
         </div>
       </div>
 
       <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <h3>Set credentials (same as Agent Hub)</h3>
+        <div class="step-n">2</div>
+        <div>
+          <h3>Set credentials</h3>
           <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">bash</span>
-              <button class="btn-copy" onclick="copyBlock(this)">Copy</button>
-            </div>
+            <div class="code-hdr"><span class="code-lang">bash</span><button class="btn-copy" onclick="copyBlock(this)">Copy</button></div>
             <pre><span class="kw">export</span> BITGET_API_KEY=<span class="str">"your_api_key"</span>
 <span class="kw">export</span> BITGET_SECRET_KEY=<span class="str">"your_secret_key"</span>
 <span class="kw">export</span> BITGET_PASSPHRASE=<span class="str">"your_passphrase"</span></pre>
@@ -857,28 +773,22 @@
       </div>
 
       <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-content">
+        <div class="step-n">3</div>
+        <div>
           <h3>Install BitSentry</h3>
           <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">bash</span>
-              <button class="btn-copy" onclick="copyBlock(this)">Copy</button>
-            </div>
+            <div class="code-hdr"><span class="code-lang">bash</span><button class="btn-copy" onclick="copyBlock(this)">Copy</button></div>
             <pre>pip install bitsentry</pre>
           </div>
         </div>
       </div>
 
       <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-content">
+        <div class="step-n">4</div>
+        <div>
           <h3>Add to Claude Code MCP config</h3>
           <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">json</span>
-              <button class="btn-copy" onclick="copyBlock(this)">Copy</button>
-            </div>
+            <div class="code-hdr"><span class="code-lang">json</span><button class="btn-copy" onclick="copyBlock(this)">Copy</button></div>
             <pre>{
   <span class="key">"mcpServers"</span>: {
     <span class="key">"bitget"</span>: {
@@ -899,36 +809,33 @@
   </div>
 </section>
 
-<!-- ══════════════════════════ DEMO VIDEO ══════════════════════════ -->
-<section>
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━ DEMO ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="demo" class="content">
   <div class="container">
-    <div class="section-label">Demo</div>
-    <h2 class="section-title">See It In Action</h2>
-    <p class="section-sub">Watch BitSentry intercept a risky trade decision in real time.</p>
-
+    <div class="eyebrow">Demo</div>
+    <h2 class="sec-title">See It In Action</h2>
+    <p class="sec-sub">Watch BitSentry intercept a risky trade decision in real time.</p>
     <!-- Replace this div with YouTube embed after recording demo -->
-    <div class="demo-placeholder">
-      <div class="play-icon">▶</div>
+    <div class="demo-box">
+      <div class="play-btn">▶</div>
       <h3>Demo video coming soon</h3>
       <p>Recording in progress — check back after the hackathon submission.</p>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════ FOOTER ══════════════════════════ -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━ FOOTER ━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <footer>
   <div class="container">
     <div class="footer-inner">
-      <div class="footer-copy">
-        BitSentry v0.2.0 — Built for Bitget AI Base Camp Hackathon S1 — Track 2: Trading Infra
-      </div>
+      <div class="footer-copy">BitSentry v0.2.0 — Built for Bitget AI Base Camp Hackathon S1 — Track 2: Trading Infra</div>
       <div class="footer-links">
         <a href="https://github.com/Benita2001/BitSentry" target="_blank" rel="noopener" class="footer-link">GitHub</a>
         <a href="https://pypi.org/project/bitsentry/" target="_blank" rel="noopener" class="footer-link">PyPI</a>
         <a href="https://www.npmjs.com/package/@0xbeni/bitsentry-mcp" target="_blank" rel="noopener" class="footer-link">npm</a>
         <a href="https://x.com/0xbeni" target="_blank" rel="noopener" class="footer-link">@0xbeni on X</a>
       </div>
-      <div class="footer-built">Built by @0xbeni</div>
+      <div class="footer-by">Built by @0xbeni</div>
     </div>
   </div>
 </footer>
@@ -936,108 +843,109 @@
 <div id="toast">Copied!</div>
 
 <script>
-  // ── Copy helpers ──────────────────────────────────────────────────────────
+// ── Copy helpers ──────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('✓ Copied to clipboard'));
+}
+function copyBlock(btn) {
+  const text = btn.closest('.code-block').querySelector('pre').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    showToast('✓ Copied to clipboard');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg || 'Copied!';
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2000);
+// ── Live data ─────────────────────────────────────────────────────
+function fgColor(v) {
+  if (v <= 25) return '#ef4444';
+  if (v <= 45) return '#f97316';
+  if (v <= 55) return '#facc15';
+  if (v <= 75) return '#22c55e';
+  return '#3b82f6';
+}
+function fgStatus(v) {
+  if (v <= 10) return ['EXTREME FEAR — WAIT', '#ef4444', 'Short sizes reduced 50%'];
+  if (v <= 25) return ['EXTREME FEAR',        '#ef4444', 'BitSentry: reduce shorts'];
+  if (v <= 45) return ['FEAR',                '#f97316', 'Proceed with caution'];
+  if (v <= 55) return ['NEUTRAL',             '#facc15', 'Normal rules apply'];
+  if (v <= 75) return ['GREED',               '#22c55e', 'Proceed normally'];
+  if (v <= 90) return ['EXTREME GREED',       '#3b82f6', 'Long sizes reduced 50%'];
+  return            ['EXTREME GREED — WAIT', '#3b82f6', 'Reducing longs 50%'];
+}
+
+async function fetchLiveData() {
+  try {
+    const r = await fetch('https://api.alternative.me/fng/?limit=1');
+    const d = await r.json();
+    const val = parseInt(d.data[0].value);
+    const lbl = d.data[0].value_classification;
+    const col = fgColor(val);
+    document.getElementById('fg-value').textContent   = val;
+    document.getElementById('fg-value').style.color   = col;
+    document.getElementById('fg-label').textContent   = lbl;
+    document.getElementById('intel-fg').textContent   = `${val} — ${lbl}`;
+    document.getElementById('card-fg').textContent    = `${val} · ${lbl}`;
+    const [st, sc, sa] = fgStatus(val);
+    document.getElementById('mkt-status').textContent = st;
+    document.getElementById('mkt-status').style.color = sc;
+    document.getElementById('mkt-sub').textContent    = sa;
+  } catch(e) {
+    document.getElementById('fg-value').textContent  = '—';
+    document.getElementById('intel-fg').textContent  = 'Unavailable';
   }
 
-  function copy(text, btn) {
-    navigator.clipboard.writeText(text).then(() => {
-      showToast('✓ Copied to clipboard');
-      if (btn) {
-        const orig = btn.textContent;
-        btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = orig; }, 1800);
-      }
-    }).catch(() => showToast('Copy failed'));
+  try {
+    const r = await fetch('https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT');
+    const d = await r.json();
+    const price  = parseFloat(d.data[0].lastPr);
+    const change = parseFloat(d.data[0].change24h) * 100;
+    const col    = change >= 0 ? '#22c55e' : '#ef4444';
+    document.getElementById('btc-price').textContent  = '$' + price.toLocaleString('en-US', {maximumFractionDigits: 2});
+    document.getElementById('btc-price').style.color  = col;
+    document.getElementById('btc-change').textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}% 24h`;
+    document.getElementById('btc-change').style.color = col;
+  } catch(e) {
+    document.getElementById('btc-price').textContent  = '—';
+    document.getElementById('btc-change').textContent = 'API unavailable';
   }
+}
 
-  function copyBlock(btn) {
-    const pre = btn.closest('.code-block').querySelector('pre');
-    const text = pre.innerText;
-    navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = '✓ Copied';
-      btn.classList.add('copied');
-      showToast('✓ Copied to clipboard');
-      setTimeout(() => {
-        btn.textContent = 'Copy';
-        btn.classList.remove('copied');
-      }, 1800);
+fetchLiveData();
+setInterval(fetchLiveData, 60000);
+
+// ── Active nav on scroll ──────────────────────────────────────────
+const allSections = document.querySelectorAll('section[id]');
+const allLinks    = document.querySelectorAll('nav .nav-link');
+
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    allLinks.forEach(l => {
+      l.classList.remove('active');
+      const d = l.querySelector('.nav-dot');
+      if (d) d.remove();
     });
-  }
-
-  // ── Live data fetch ───────────────────────────────────────────────────────
-
-  function fgColor(val) {
-    if (val <= 25) return '#ef4444';
-    if (val <= 45) return '#f97316';
-    if (val <= 55) return '#facc15';
-    if (val <= 75) return '#22c55e';
-    return '#3b82f6';
-  }
-
-  function fgMarketStatus(val, label) {
-    if (val <= 10) return ['EXTREME FEAR — WAIT', '#ef4444', 'Short sizes reduced 50%'];
-    if (val <= 25) return ['EXTREME FEAR', '#ef4444', 'BitSentry: reduce shorts 50%'];
-    if (val <= 45) return ['FEAR', '#f97316', 'BitSentry: proceed with caution'];
-    if (val <= 55) return ['NEUTRAL', '#facc15', 'BitSentry: normal rules apply'];
-    if (val <= 75) return ['GREED', '#22c55e', 'BitSentry: proceed normally'];
-    if (val <= 90) return ['EXTREME GREED', '#3b82f6', 'BitSentry: reduce longs 50%'];
-    return ['EXTREME GREED — WAIT', '#3b82f6', 'Long sizes reduced 50%'];
-  }
-
-  async function fetchLiveData() {
-    // Fear & Greed
-    try {
-      const r = await fetch('https://api.alternative.me/fng/?limit=1');
-      const d = await r.json();
-      const entry = d.data[0];
-      const val = parseInt(entry.value);
-      const label = entry.value_classification;
-
-      document.getElementById('fg-value').textContent = val;
-      document.getElementById('fg-value').style.color = fgColor(val);
-      document.getElementById('fg-label').textContent = label;
-      document.getElementById('intel-fg').textContent = `${val} — ${label}`;
-
-      const [statusText, statusColor, actionText] = fgMarketStatus(val, label);
-      document.getElementById('mkt-status').textContent = statusText;
-      document.getElementById('mkt-status').style.color = statusColor;
-      document.getElementById('mkt-action').textContent = actionText;
-    } catch (e) {
-      document.getElementById('fg-value').textContent = '—';
-      document.getElementById('intel-fg').textContent = 'Unavailable';
+    const a = document.querySelector(`nav .nav-link[href="#${e.target.id}"]`);
+    if (a) {
+      a.classList.add('active');
+      if (!a.querySelector('.nav-dot')) {
+        const dot = document.createElement('span');
+        dot.className = 'nav-dot';
+        a.prepend(dot);
+      }
     }
+  });
+}, { threshold: 0.45 });
 
-    // BTC Price
-    try {
-      const r = await fetch('https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT');
-      const d = await r.json();
-      const ticker = d.data[0];
-      const price = parseFloat(ticker.lastPr);
-      const change = parseFloat(ticker.change24h) * 100;
-      const changeSign = change >= 0 ? '+' : '';
-
-      document.getElementById('btc-price').textContent =
-        '$' + price.toLocaleString('en-US', { maximumFractionDigits: 2 });
-      document.getElementById('btc-price').style.color =
-        change >= 0 ? 'var(--green)' : 'var(--red)';
-      document.getElementById('btc-change').textContent =
-        `${changeSign}${change.toFixed(2)}% 24h`;
-      document.getElementById('btc-change').style.color =
-        change >= 0 ? 'var(--green)' : 'var(--red)';
-    } catch (e) {
-      document.getElementById('btc-price').textContent = '—';
-      document.getElementById('btc-change').textContent = 'API unavailable';
-    }
-  }
-
-  fetchLiveData();
-  setInterval(fetchLiveData, 60000);
+allSections.forEach(s => io.observe(s));
 </script>
 </body>
 </html>
