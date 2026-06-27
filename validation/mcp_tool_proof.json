@@ -1,0 +1,44 @@
+{
+  "description": "BitSentry MCP tool outputs - verifiable proof of functionality",
+  "bitsentry_version": "0.2.0",
+  "npm_package": "@0xbeni/bitsentry-mcp@0.2.2",
+  "pypi_package": "bitsentry==0.2.0",
+  "generated_at": "2026-06-27T09:40:37.649617",
+  "bgc_connected": false,
+  "mcp_tools_tested": [
+    "check_risk",
+    "get_account_summary",
+    "get_position_safety",
+    "manage_symbols",
+    "get_audit_report"
+  ],
+  "check_risk_result": {
+    "approved": true,
+    "agent_instruction": "PROCEED",
+    "recommended_size_usdt": 100,
+    "recommended_leverage": 5,
+    "fear_greed_index": 15,
+    "fear_greed_label": "Extreme Fear",
+    "funding_rate": 0.0,
+    "volatility_24h": 0.0,
+    "risk_score": 15,
+    "warnings": []
+  },
+  "account_summary": {
+    "overall_safety": "UNKNOWN",
+    "total_positions": 0,
+    "green_count": 0,
+    "yellow_count": 0,
+    "red_count": 0,
+    "total_unrealized_pnl": 0.0,
+    "note": "BGCClient unavailable"
+  },
+  "audit_report": {
+    "total_trade_intents": 1,
+    "total_risk_checks": 70,
+    "approval_rate": 0.0,
+    "integrity_hash": "d095c7063c8cb3a76bdb96f1570c256f...",
+    "verified": true,
+    "generated_at": "2026-06-27T09:40:37.647695+00:00"
+  }
+}
