@@ -151,11 +151,14 @@ nav {
   display: block;
   line-height: 1.05;
 }
-.hero-title .arrow-icon {
-  font-style: normal;
-  font-family: 'Inter', sans-serif;
-  color: var(--green);
-  font-weight: 900;
+.hero-title .hero-tagline {
+  display: block;
+  font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0em;
+  line-height: 1.5;
+  margin-top: 12px;
 }
 
 .hero-sub {
@@ -509,7 +512,7 @@ footer { border-top: 1px solid #0f0f0f; padding: 40px 0; }
         <a href="#install" class="nav-link">Install</a>
         <a href="https://github.com/Benita2001/BitSentry" target="_blank" rel="noopener" class="nav-link">Docs</a>
       </div>
-      <button class="nav-cta" onclick="copyText('pip install bitsentry')">Get Started →</button>
+      <a href="https://github.com/Benita2001/BitSentry" target="_blank" rel="noopener" class="nav-cta">Get Started →</a>
     </div>
   </div>
 </nav>
@@ -520,21 +523,13 @@ footer { border-top: 1px solid #0f0f0f; padding: 40px 0; }
   <div class="hero-content">
     <div class="container">
 
-      <p class="hero-eyebrow">
-        BitSentry v0.2.0
-        <span class="eyebrow-sep">|</span>
-        Built for Bitget Agent Hub
-      </p>
-
       <h1 class="hero-title">
         <span class="green-word">BitSentry</span>
-        Safety Layer
-        <br>for Agents<span class="arrow-icon"> ↗</span>
+        <span class="hero-tagline">Safety Layer for Agents</span>
       </h1>
 
       <p class="hero-sub">
-        Wraps every trade decision with risk enforcement, audit logging,
-        and live market intelligence. Your agent never trades blind again.
+        BitSentry wraps every trade decision with risk enforcement, tamper-proof audit logging, and live market intelligence. Your agent never trades blind again.
       </p>
 
       <!-- Floating terminal card -->
@@ -641,25 +636,21 @@ footer { border-top: 1px solid #0f0f0f; padding: 40px 0; }
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ PROBLEM ━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <section id="problem" class="content">
   <div class="container">
-    <div class="eyebrow">The Problem</div>
-    <h2 class="sec-title">Trading Agents Are Flying Blind</h2>
+    <h2 class="sec-title">Trading Agents Are Blind</h2>
     <p class="sec-sub">Most agents connect directly to exchanges with no safety layer between intention and execution.</p>
     <div class="problem-grid">
       <div class="prob-card">
         <div class="prob-num">01</div>
-        <div class="prob-icon">⚠️</div>
         <h3>Black Box Agents</h3>
         <p>When your agent loses money, you don't know why. No decision trail. No accountability. Just a smaller balance.</p>
       </div>
       <div class="prob-card">
         <div class="prob-num">02</div>
-        <div class="prob-icon">💥</div>
         <h3>No Risk Controls</h3>
         <p>Agents trade without leverage caps, position limits, or loss circuit breakers. One bad trade wipes the account.</p>
       </div>
       <div class="prob-card">
         <div class="prob-num">03</div>
-        <div class="prob-icon">📉</div>
         <h3>Dead Strategies</h3>
         <p>Strategies degrade silently. Your agent keeps running a broken strategy while you watch the losses mount.</p>
       </div>
@@ -670,7 +661,6 @@ footer { border-top: 1px solid #0f0f0f; padding: 40px 0; }
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 5 LAYERS ━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <section id="layers" class="content">
   <div class="container">
-    <div class="eyebrow">The Solution</div>
     <h2 class="sec-title">5 Layers of Protection</h2>
     <p class="sec-sub">Every trade passes through all 5 layers before touching Bitget.</p>
     <div class="layers">
@@ -730,24 +720,20 @@ footer { border-top: 1px solid #0f0f0f; padding: 40px 0; }
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ MARKET INTEL ━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <section id="market" class="content">
   <div class="container">
-    <div class="eyebrow">Market Intelligence</div>
     <h2 class="sec-title">Market-Aware Risk</h2>
     <p class="sec-sub">BitSentry reads live market conditions before approving every trade.</p>
     <div class="intel-grid">
       <div class="intel-card">
-        <div class="icon">😨</div>
         <h3>Fear &amp; Greed Index</h3>
         <p>Extreme Greed (&gt;75) reduces long position sizes 50%. Extreme Fear (&lt;25) reduces short sizes. Prevents buying tops and selling bottoms.</p>
         <div class="intel-tag"><span class="pulse"></span>&nbsp;Live:&nbsp;<strong id="intel-fg">—</strong></div>
       </div>
       <div class="intel-card">
-        <div class="icon">⚡</div>
         <h3>Funding Rate</h3>
         <p>High positive funding means longs are paying heavily. BitSentry flags this so agents avoid expensive carry costs and poor timing.</p>
         <div class="intel-tag">Source: Bitget futures via bgc</div>
       </div>
       <div class="intel-card">
-        <div class="icon">📊</div>
         <h3>Volatility Filter</h3>
         <p>When 24h volatility exceeds 4%, leverage is capped at 5x to protect against liquidation in fast-moving markets.</p>
         <div class="intel-tag">Calculated from live OHLCV data</div>
@@ -821,21 +807,6 @@ footer { border-top: 1px solid #0f0f0f; padding: 40px 0; }
         </div>
       </div>
 
-    </div>
-  </div>
-</section>
-
-<!-- ━━━━━━━━━━━━━━━━━━━━━━━━ DEMO ━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<section id="demo" class="content">
-  <div class="container">
-    <div class="eyebrow">Demo</div>
-    <h2 class="sec-title">See It In Action</h2>
-    <p class="sec-sub">Watch BitSentry intercept a risky trade decision in real time.</p>
-    <!-- Replace this div with YouTube embed after recording demo -->
-    <div class="demo-box">
-      <div class="play-btn">▶</div>
-      <h3>Demo video coming soon</h3>
-      <p>Recording in progress — check back after the hackathon submission.</p>
     </div>
   </div>
 </section>
@@ -929,8 +900,20 @@ async function fetchLiveData() {
     document.getElementById('btc-change').textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}% 24h`;
     document.getElementById('btc-change').style.color = col;
   } catch(e) {
-    document.getElementById('btc-price').textContent  = '—';
-    document.getElementById('btc-change').textContent = 'API unavailable';
+    try {
+      const r2 = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+      const d2 = await r2.json();
+      const price  = d2.bitcoin.usd;
+      const change = d2.bitcoin.usd_24h_change;
+      const col    = change >= 0 ? '#22c55e' : '#ef4444';
+      document.getElementById('btc-price').textContent  = '$' + price.toLocaleString('en-US', {maximumFractionDigits: 2});
+      document.getElementById('btc-price').style.color  = col;
+      document.getElementById('btc-change').textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}% 24h`;
+      document.getElementById('btc-change').style.color = col;
+    } catch(e2) {
+      document.getElementById('btc-price').textContent  = '—';
+      document.getElementById('btc-change').textContent = 'API unavailable';
+    }
   }
 }
 
