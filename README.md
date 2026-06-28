@@ -25,7 +25,7 @@ make verify     # recomputes SHA-256 hash — Integrity verified: True
 |--------|-------|
 | BTC Price | $60,118.71 (Bitget live) |
 | ETH Price | $1,580.71 (Bitget live) |
-| Fear & Greed | 18 — Extreme Fear (alternative.me live) |
+| Fear & Greed | 18 — Extreme Fear |
 | BTC Volatility 24h | 1.97% |
 | Risk checks run | 15 |
 | Approved | 11 (73.3%) |
@@ -48,7 +48,7 @@ make verify     # confirms SHA-256 integrity
 
 ## The Problem
 
-Every AI trading agent on Bitget is a black box. When it loses money, nobody knows why. When it violates risk rules, nothing stops it. When its strategy degrades, there is no instrument to detect it before the losses mount.
+Every AI trading agent a black box. When it loses money, nobody knows why. When it violates risk rules, nothing stops it. When its strategy degrades, there is no instrument to detect it before the losses mount.
 
 BitSentry fixes this.
 
@@ -84,7 +84,7 @@ Bitget Exchange (via bgc)
 
 | Sub-layer | Rule | Action |
 |-----------|------|--------|
-| Symbol Check | Symbol must be in allowed list | BLOCKED if not |
+| Symbol Check | Symbol must be in allowed list |
 | Leverage Cap | Max 10x (configurable) | BLOCKED if exceeded |
 | Position Size | Max 5% of account per trade | BLOCKED if exceeded |
 | Daily Loss Circuit | Stops trading if daily loss > 3% of account | BLOCKED |
