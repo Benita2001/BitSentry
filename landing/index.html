@@ -12,25 +12,41 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:     #050505;
+  --bg:     #09110d;
   --green:  #22c55e;
   --text:   #f8fafc;
   --muted:  #6b7280;
   --dim:    #374151;
-  --border: #161616;
-  --surface:#0c0c0c;
+  --border: #1a2820;
+  --surface:#0d1710;
   --mono:   'JetBrains Mono', monospace;
 }
 
 html { scroll-behavior: smooth; }
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(ellipse 110% 55% at 50% -5%, rgba(34,197,94,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 50% at 50% 105%, rgba(34,197,94,0.06) 0%, transparent 55%),
+    var(--bg);
   color: var(--text);
   font-family: 'Inter', sans-serif;
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+/* Grain noise overlay — fixed so it covers all sections */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.072;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  background-repeat: repeat;
 }
 a { color: inherit; text-decoration: none; }
 .container { max-width: 1160px; margin: 0 auto; padding: 0 32px; }
@@ -87,10 +103,10 @@ nav {
   text-align: center;
   overflow: hidden;
   background:
-    radial-gradient(ellipse 85% 50% at 50% 108%, rgba(34,197,94,0.28) 0%, transparent 62%),
-    radial-gradient(ellipse 45% 35% at 10% 110%, rgba(34,197,94,0.10) 0%, transparent 52%),
-    radial-gradient(ellipse 45% 35% at 90% 110%, rgba(34,197,94,0.10) 0%, transparent 52%),
-    #050505;
+    radial-gradient(ellipse 85% 50% at 50% 108%, rgba(34,197,94,0.22) 0%, transparent 62%),
+    radial-gradient(ellipse 45% 35% at 10% 110%, rgba(34,197,94,0.08) 0%, transparent 52%),
+    radial-gradient(ellipse 45% 35% at 90% 110%, rgba(34,197,94,0.08) 0%, transparent 52%),
+    transparent;
 }
 .hero::before {
   content: '';
